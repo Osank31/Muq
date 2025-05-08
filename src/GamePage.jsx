@@ -4,8 +4,9 @@ import '@tensorflow/tfjs-converter';
 import '@tensorflow/tfjs-backend-webgl';
 import * as handpose from '@tensorflow-models/handpose';
 import * as handPoseDetection from '@tensorflow-models/hand-pose-detection';
-import OpenHandImage from '../public/open_hand-removebg-preview.png'
-import ClosedHandImage from '../public/close_hand-removebg-preview.png'
+import OpenHandImage from '/open_hand-removebg-preview.png'
+import ClosedHandImage from '/close_hand-removebg-preview.png'
+import { getHandedness, getHandState } from './components/handFunctions.js';
 
 const GamePage = () => {
 
@@ -13,53 +14,6 @@ const GamePage = () => {
     const canvasRef = useRef(null);
     const modelRef = useRef(null);
     const HandRef = useRef(null);
-
-    function getHandedness(handedness) {
-        if (handedness === 'Left')
-            return 'Right'
-        return 'Left'
-    }
-
-    function calculateDistance(coordinates1, coordinates2) {
-        let [x1, y1] = [coordinates1.x, coordinates1.y];
-        let [x2, y2] = [coordinates2.x, coordinates2.y];
-
-        return Math.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2);
-    }
-
-    function getHandState(keypoints, handedness) {
-        let answer = 'Open';
-        let [thumb, indexFinger, ringFinger, middleFinger, littleFinger] = [false, false, false, false, false];
-
-        if (keypoints[8].y > keypoints[5].y) {
-            indexFinger = true;
-        }
-        if (keypoints[12].y > keypoints[9].y) {
-            middleFinger = true;
-        }
-        if (keypoints[16].y > keypoints[13].y) {
-            ringFinger = true;
-        }
-        if (keypoints[20].y > keypoints[17].y) {
-            littleFinger = true;
-        }
-
-        if (handedness === "Right") {
-            if (keypoints[4].x < keypoints[2].x) {
-                thumb = true;
-            }
-        } else if (handedness === "Left") {
-            if (keypoints[4].x > keypoints[2].x) {
-                thumb = true;
-            }
-        }
-
-        if (indexFinger && middleFinger && ringFinger && littleFinger && thumb) {
-            answer = "Closed";
-        }
-
-        return answer;
-    }
 
     useEffect(() => {
         const setupCamera = async () => {
@@ -153,7 +107,7 @@ const GamePage = () => {
                 ref={canvasRef}
                 width={640}
                 height={480}
-                style={{visibility: 'hidden'}}
+                style={{}}
             />
             <img ref={HandRef}/>
         </div>
