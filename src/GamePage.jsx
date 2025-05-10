@@ -111,12 +111,11 @@ const GamePage = () => {
             :
             (<>
                 <div style={{
-                    position: 'fixed',     // Stick to top-right of the viewport
+                    position: 'fixed',
                     top: '10px',
                     right: '10px',
                     width: '320px',
-                    height: 'auto',        // allows timer to appear below
-                    // zIndex: 9999,
+                    height: 'auto',
                     display: 'flex',
                     flexDirection: 'column',
                     alignItems: 'center',
