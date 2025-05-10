@@ -7,6 +7,7 @@ import * as handPoseDetection from '@tensorflow-models/hand-pose-detection';
 import OpenHandImage from '/open_hand-removebg-preview.png'
 import ClosedHandImage from '/close_hand-removebg-preview.png'
 import { getHandedness, getHandState } from './components/handFunctions.js';
+import Timer from './components/Timer.jsx';
 
 const GamePage = () => {
 
@@ -16,6 +17,10 @@ const GamePage = () => {
     const HandRef = useRef(null);
 
     const [loading, setLoading]=useState(true);
+
+    const handleOnComplete = () =>{
+        console.log("Time up");
+    }
 
     useEffect(() => {
         const loadModelAndDetect = async () => {
@@ -98,6 +103,7 @@ const GamePage = () => {
 
         init();
     }, [])
+
     return ( 
         loading?
         (<>Loading</>)
@@ -121,6 +127,7 @@ const GamePage = () => {
                 style={{}}
             />
             <img ref={HandRef} />
+            <Timer initialSeconds={10} onComplete={handleOnComplete}/>
         </div>)
     )
 }
