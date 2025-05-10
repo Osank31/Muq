@@ -1,4 +1,4 @@
-import React, { useRef, useEffect } from 'react';
+import React, { useRef, useEffect, useState } from 'react';
 import * as tf from '@tensorflow/tfjs-core';
 import '@tensorflow/tfjs-converter';
 import '@tensorflow/tfjs-backend-webgl';
@@ -15,23 +15,9 @@ const GamePage = () => {
     const modelRef = useRef(null);
     const HandRef = useRef(null);
 
+    const [loading, setLoading]=useState(true);
+
     useEffect(() => {
-        const setupCamera = async () => {
-            const stream = await navigator.mediaDevices.getUserMedia({
-                video: { width: 640, height: 480 },
-                audio: false,
-            });
-
-            if (videoRef.current) {
-                videoRef.current.srcObject = stream;
-                return new Promise((resolve) => {
-                    videoRef.current.onloadedmetadata = () => {
-                        resolve();
-                    };
-                });
-            }
-        }
-
         const loadModelAndDetect = async () => {
             await tf.setBackend('webgl');
             await tf.ready();
@@ -44,7 +30,23 @@ const GamePage = () => {
                 }
             );
             console.log('Handpose model loaded.');
-            detectHands();
+            setLoading(false)
+        }
+
+        const setupCamera = async () => {
+            const stream = await navigator.mediaDevices.getUserMedia({
+                video: { width: 640, height: 480 },
+                audio: false,
+            });
+            console.log(videoRef)
+            if (videoRef.current) {
+                videoRef.current.srcObject = stream;
+                return new Promise((resolve) => {
+                    videoRef.current.onloadedmetadata = () => {
+                        resolve();
+                    };
+                });
+            }
         }
 
         const detectHands = () => {
@@ -64,14 +66,14 @@ const GamePage = () => {
                         predictions[0].handState = getHandState(predictions[0].keypoints, predictions[0].handedness);
                         // console.log((predictions[0]));
 
-                        
+
                         if (HandRef.current) {
                             if (predictions[0].handState === 'Open')
                                 HandRef.current.src = OpenHandImage;
                             if (predictions[0].handState === 'Closed')
                                 HandRef.current.src = ClosedHandImage;
                         }
-                        
+
                         console.log(HandRef.current.src)
 
                         predictions[0].keypoints.forEach(coordinates => {
@@ -88,10 +90,19 @@ const GamePage = () => {
             }
             detect()
         }
-        setupCamera().then(loadModelAndDetect);
+        const init = async () => {
+            await loadModelAndDetect();
+            await setupCamera();
+            detectHands();
+        };
+
+        init();
     }, [])
-    return (
-        <div style={{ position: 'relative', width: 640, height: 480 }}>
+    return ( 
+        loading?
+        (<>Loading</>)
+        :
+        (<div style={{ position: 'relative', width: 640, height: 480 }}>
             <video
                 ref={videoRef}
                 autoPlay
@@ -109,8 +120,8 @@ const GamePage = () => {
                 height={480}
                 style={{}}
             />
-            <img ref={HandRef}/>
-        </div>
+            <img ref={HandRef} />
+        </div>)
     )
 }
 
