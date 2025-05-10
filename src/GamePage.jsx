@@ -16,9 +16,9 @@ const GamePage = () => {
     const modelRef = useRef(null);
     const HandRef = useRef(null);
 
-    const [loading, setLoading]=useState(true);
+    const [loading, setLoading] = useState(true);
 
-    const handleOnComplete = () =>{
+    const handleOnComplete = () => {
         console.log("Time up");
     }
 
@@ -56,7 +56,7 @@ const GamePage = () => {
 
         const detectHands = () => {
             const ctx = canvasRef.current.getContext('2d');
-
+            
             const detect = async () => {
                 if (modelRef.current && videoRef.current && videoRef.current.readyState === 4) {
                     const predictions = await modelRef.current.estimateHands(videoRef.current);
@@ -66,12 +66,10 @@ const GamePage = () => {
                     ctx.translate(-canvasRef.current.width, 0);
                     ctx.drawImage(videoRef.current, 0, 0, canvasRef.current.width, canvasRef.current.height);
                     if (predictions.length > 0) {
-
+                        HandRef.current.style.visibility=''
                         predictions[0].handedness = getHandedness(predictions[0].handedness);
                         predictions[0].handState = getHandState(predictions[0].keypoints, predictions[0].handedness);
                         // console.log((predictions[0]));
-
-
                         if (HandRef.current) {
                             if (predictions[0].handState === 'Open')
                                 HandRef.current.src = OpenHandImage;
@@ -89,6 +87,9 @@ const GamePage = () => {
                             ctx.fill();
                         });
                     }
+                    else{
+                        HandRef.current.style.visibility='hidden';
+                    }
                     ctx.restore();
                 }
                 requestAnimationFrame(detect);
@@ -104,31 +105,71 @@ const GamePage = () => {
         init();
     }, [])
 
-    return ( 
-        loading?
-        (<>Loading</>)
-        :
-        (<div style={{ position: 'relative', width: 640, height: 480 }}>
-            <video
-                ref={videoRef}
-                autoPlay
-                playsInline
-                muted
-                width={640}
-                height={480}
-                style={{
-                    position: 'absolute', top: -100, left: 0, visibility: 'hidden'
-                }}
-            />
-            <canvas
-                ref={canvasRef}
-                width={640}
-                height={480}
-                style={{}}
-            />
-            <img ref={HandRef} />
-            <Timer initialSeconds={10} onComplete={handleOnComplete}/>
-        </div>)
+    return (
+        loading ?
+            (<>Loading</>)
+            :
+            (<>
+                <div style={{
+                    position: 'fixed',     // Stick to top-right of the viewport
+                    top: '10px',
+                    right: '10px',
+                    width: '320px',
+                    height: 'auto',        // allows timer to appear below
+                    // zIndex: 9999,
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                }}>
+
+                    <div style={{
+                        position: 'relative',
+                        width: '320px',
+                        height: '240px',
+                    }}>
+                        <video
+                            ref={videoRef}
+                            autoPlay
+                            playsInline
+                            muted
+                            width={640}
+                            height={480}
+                            style={{
+                                position: 'absolute',
+                                top: 0,
+                                left: 0,
+                                width: '320px',
+                                height: '240px',
+                                opacity: 0,
+                                zIndex: 1
+                            }}
+                        />
+                        <canvas
+                            ref={canvasRef}
+                            width={640}
+                            height={480}
+                            style={{
+                                position: 'absolute',
+                                top: 0,
+                                left: 0,
+                                width: '320px',
+                                height: '240px',
+                                border: '1px solid black',
+                                zIndex: 2
+                            }}
+                        />
+                    </div>
+
+                    <Timer initialSeconds={10} onComplete={handleOnComplete} />
+
+                </div>
+
+
+                <div>
+                    <img ref={HandRef} />
+                </div>
+            </>
+            )
     )
 }
 
