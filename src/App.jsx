@@ -6,8 +6,8 @@ import Loading from './components/Loading.jsx'
 function App() {
   return (
     <>
-      <IntroPage />
-      {/* <GamePage/> */}
+      {/* <IntroPage /> */}
+      <GamePage/>
       {/* <Test/> */}
       {/* <Loading/> */}
     </>
