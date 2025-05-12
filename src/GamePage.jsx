@@ -209,10 +209,13 @@ const GamePage = () => {
                             };
                         })
 
-                        // console.log(updatedMosquitoArray)
+                        console.log(...updatedMosquitoArray)
                         updatedMosquitoArray.forEach((mosquito) => {
-                            console.log(mosquitoRef.current)
-                            gameCtx.drawImage(mosquitoRef.current, mosquito.x, mosquito.y)
+                            // console.log(mosquitoRef.current)
+                            if (mosquitoRef.current && mosquitoRef.current.complete) {
+                                gameCtx.drawImage(mosquitoRef.current, mosquito.x, mosquito.y, 500, 500);
+                            }
+
                         })
                         return updatedMosquitoArray;
 
@@ -304,7 +307,7 @@ const GamePage = () => {
                     <canvas ref={gameRef} width={640} height={480} style={{ border: "2px solid black" }} />
                     {/* Hand image element (used for drawing on canvas) */}
                     <img ref={HandRef} />
-                    <img ref={mosquitoRef} src={mosquitoImage} height={50} width={50}/>
+                    <img ref={mosquitoRef} src={mosquitoImage} height={50} width={50} />
                 </div>
             </>
             )
