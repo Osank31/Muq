@@ -8,6 +8,7 @@ import OpenHandImage from '/open_hand-removebg-preview.png'
 import ClosedHandImage from '/close_hand-removebg-preview.png'
 import { getHandedness, getHandState } from './components/handFunctions.js';
 import RoomImage from '/how-to-draw-a-room-featured-image-1200.webp'
+import mosquitoImage from '/ChatGPT Image May 11, 2025, 09_14_53 AM.png'
 import Timer from './components/Timer.jsx';
 
 const GamePage = () => {
@@ -18,13 +19,14 @@ const GamePage = () => {
     const HandRef = useRef(null);
     const gameRef = useRef(null)
     const roomRef = useRef(null);
-
+    const mosquitoRef = useRef(null);
+    
     const [loading, setLoading] = useState(true);
 
     const handleOnComplete = () => {
-        // console.log("Time up");
+        // Timer complete handler
     }
-
+    // Calculate incenter of triangle formed by three hand keypoints
     const getIncenter = (x1, y1, x2, y2, x3, y3) => {
         let a = Math.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2);
         let b = Math.sqrt((x2 - x3) ** 2 + (y2 - y3) ** 2);
@@ -36,10 +38,9 @@ const GamePage = () => {
         ];
     }
 
+    // Transform coordinates if needed (currently passthrough)
     const transformAxis = (x, y) => {
-        // return [(x - 310), (y - 330)]
-        return [(x - 310), (y - 330)]
-        // return [x,y]
+        return [x, y]
     }
 
     useEffect(() => {
@@ -54,7 +55,6 @@ const GamePage = () => {
                     maxHands: 2,
                 }
             );
-            // console.log('Handpose model loaded.');
             setLoading(false)
         }
 
@@ -63,7 +63,6 @@ const GamePage = () => {
                 video: { width: 640, height: 480 },
                 audio: false,
             });
-            // console.log(videoRef)
             if (videoRef.current) {
                 videoRef.current.srcObject = stream;
                 return new Promise((resolve) => {
@@ -74,6 +73,7 @@ const GamePage = () => {
             }
         }
 
+        // Main hand detection and drawing loop (no comments inside as requested)
         const detectHands = () => {
             const ctx = canvasRef.current.getContext('2d');
             const gameCtx = gameRef.current.getContext('2d');
@@ -85,19 +85,23 @@ const GamePage = () => {
                     gameCtx.clearRect(0, 0, gameRef.current.width, gameRef.current.height)
                     ctx.save();
                     gameCtx.save();
-                    // ctx.scale(-1, 1);
-                    // ctx.translate(-canvasRef.current.width, 0);
+                    ctx.scale(-1, 1);
+                    ctx.translate(-canvasRef.current.width, 0);
                     ctx.drawImage(videoRef.current, 0, 0, canvasRef.current.width, canvasRef.current.height);
                     gameCtx.drawImage(roomRef.current, 0, 0, gameRef.current.width, gameRef.current.height)
+
                     if (predictions.length > 0) {
                         HandRef.current.style.visibility = ''
                         predictions[0].handedness = getHandedness(predictions[0].handedness);
                         predictions[0].handState = getHandState(predictions[0].keypoints, predictions[0].handedness);
 
-                        let incenter = getIncenter(predictions[0].keypoints[0].x, predictions[0].keypoints[0].y, predictions[0].keypoints[5].x, predictions[0].keypoints[5].y, predictions[0].keypoints[17].x, predictions[0].keypoints[17].y);
+                        let incenter = getIncenter(
+                            predictions[0].keypoints[0].x, predictions[0].keypoints[0].y,
+                            predictions[0].keypoints[5].x, predictions[0].keypoints[5].y,
+                            predictions[0].keypoints[17].x, predictions[0].keypoints[17].y
+                        );
 
                         let handCoordinates = transformAxis(incenter[0], incenter[1]);
-                        console.log(handCoordinates)
 
                         if (HandRef.current) {
                             if (predictions[0].handState === 'Open')
@@ -106,16 +110,18 @@ const GamePage = () => {
                                 HandRef.current.src = ClosedHandImage;
                         }
 
-                        // console.log(incenter)
-                        // console.log(HandRef.current.src)
-
                         if (HandRef.current && HandRef.current.complete) {
                             if (handCoordinates[0] >= 0 && handCoordinates[0] < 640 &&
                                 handCoordinates[1] >= 0 && handCoordinates[1] < 480
                             ) {
-                                gameCtx.drawImage(HandRef.current, handCoordinates[0], handCoordinates[1], 124.2, 150)
+                                if (HandRef.current.src.includes(`open_hand-removebg-preview.png`)) {
+                                    gameCtx.drawImage(HandRef.current, handCoordinates[0], handCoordinates[1], 190.2435, 229.5)
+                                }
+                                else {
+                                    gameCtx.drawImage(HandRef.current, handCoordinates[0], handCoordinates[1], 170.2435, 170.2435 / 1.26829)
+                                }
                             }
-                            else{
+                            else {
                                 console.warn(`outside`)
                             }
                         }
@@ -131,12 +137,14 @@ const GamePage = () => {
                     else {
                         HandRef.current.style.visibility = 'hidden';
                     }
+
                     ctx.restore();
                 }
                 requestAnimationFrame(detect);
             }
             detect()
         }
+
         const init = async () => {
             await loadModelAndDetect();
             await setupCamera();
@@ -151,6 +159,7 @@ const GamePage = () => {
             (<>Loading</>)
             :
             (<>
+                {/* Video and overlay canvas (top right) */}
                 <div style={{
                     position: 'fixed',
                     top: '10px',
@@ -167,13 +176,14 @@ const GamePage = () => {
                         width: '320px',
                         height: '240px',
                     }}>
+                        {/* Hidden video element for webcam */}
                         <video
                             ref={videoRef}
                             autoPlay
                             playsInline
                             muted
-                            width={1920}
-                            height={1080}
+                            width={1280}
+                            height={720}
                             style={{
                                 position: 'absolute',
                                 top: 0,
@@ -184,10 +194,11 @@ const GamePage = () => {
                                 zIndex: 1
                             }}
                         />
+                        {/* Canvas for drawing video and keypoints */}
                         <canvas
                             ref={canvasRef}
-                            width={1920}
-                            height={1080}
+                            width={1280}
+                            height={720}
                             style={{
                                 position: 'absolute',
                                 top: 0,
@@ -200,15 +211,20 @@ const GamePage = () => {
                         />
                     </div>
 
+                    {/* Countdown timer */}
                     <Timer initialSeconds={10} onComplete={handleOnComplete} />
 
                 </div>
 
-
+                {/* Main game canvas and hidden assets */}
                 <div>
+                    {/* Hidden room background image */}
                     <img src={RoomImage} ref={roomRef} alt="" style={{ display: 'none' }} />
+                    {/* Game canvas where hand image is drawn */}
                     <canvas ref={gameRef} width={640} height={480} style={{ border: "2px solid black" }} />
+                    {/* Hand image element (used for drawing on canvas) */}
                     <img ref={HandRef} />
+                    <img ref={mosquitoRef} src={mosquitoImage} />
                 </div>
             </>
             )
