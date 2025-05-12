@@ -17,11 +17,15 @@ const GamePage = () => {
     const canvasRef = useRef(null);
     const modelRef = useRef(null);
     const HandRef = useRef(null);
-    const gameRef = useRef(null)
+    const gameRef = useRef(null);
     const roomRef = useRef(null);
     const mosquitoRef = useRef(null);
-    
+    // const mosquitoPositionRef = useRef({ x: 0, y: 0 });
+
     const [loading, setLoading] = useState(true);
+    const [mosquitoes, setMosquitoes] = useState([]);
+
+
 
     const handleOnComplete = () => {
         // Timer complete handler
@@ -42,6 +46,29 @@ const GamePage = () => {
     const transformAxis = (x, y) => {
         return [x, y]
     }
+
+    useEffect(() => {
+        const handleKeyDown = (e) => {
+            if (e.key === 'm') {
+                const newMosquito = {
+                    id: Date.now(),
+                    x: 0,
+                    y: 0,
+                    targetX: -640,
+                    targetY: -480,
+                    speed: 5
+                };
+
+                setMosquitoes((prev) => [...prev, newMosquito]);
+            }
+        }
+        window.addEventListener('keydown', handleKeyDown);
+        return () => window.removeEventListener('keydown', handleKeyDown);
+    }, [])
+
+    // useEffect(() => {
+    //     // console.log(...mosquitoes);
+    // }, [mosquitoes]);
 
     useEffect(() => {
         const loadModelAndDetect = async () => {
@@ -138,6 +165,59 @@ const GamePage = () => {
                         HandRef.current.style.visibility = 'hidden';
                     }
 
+                    // setMosquitoes(prevMosquitoes => {
+                    //     const updated = prevMosquitoes.map(m => {
+                    //         const dx = m.targetX - m.x;
+                    //         const dy = m.targetY - m.y;
+                    //         const dist = Math.sqrt(dx * dx + dy * dy);
+                    //         if (dist < 2) return m;
+                    //         return {
+                    //             ...m,
+                    //             x: m.x + (dx / dist) * m.speed,
+                    //             y: m.y + (dy / dist) * m.speed
+                    //         };
+                    //     });
+
+                    //     updated.forEach(m => {
+                    //         gameCtx.drawImage(mosquitoRef.current, m.x, m.y, 50, 50);
+                    //     });
+
+                    //     return updated;
+                    // });
+
+                    setMosquitoes((mosquitoArray) => {
+                        const updatedMosquitoArray = mosquitoArray.map(mosquito => {
+                            const dx = mosquito.targetX - mosquito.x;;
+                            const dy = mosquito.targetY - mosquito.y;
+
+                            const dist = (dx ** 2 + dy ** 2);
+
+                            if (dist < 1) {
+                                // Set new random target when close to current one
+                                return {
+                                    ...mosquito,
+                                };
+                            }
+
+                            const dirX = dx === 0 ? 0 : dx / Math.abs(dx);
+                            const dirY = dy === 0 ? 0 : dy / Math.abs(dy);
+
+                            return {
+                                ...mosquito,
+                                x: mosquito.x + dirX * mosquito.speed,
+                                y: mosquito.y + dirY * mosquito.speed,
+                            };
+                        })
+
+                        // console.log(updatedMosquitoArray)
+                        updatedMosquitoArray.forEach((mosquito) => {
+                            console.log(mosquitoRef.current)
+                            gameCtx.drawImage(mosquitoRef.current, mosquito.x, mosquito.y)
+                        })
+                        return updatedMosquitoArray;
+
+                    })
+
                     ctx.restore();
                 }
                 requestAnimationFrame(detect);
@@ -224,7 +304,7 @@ const GamePage = () => {
                     <canvas ref={gameRef} width={640} height={480} style={{ border: "2px solid black" }} />
                     {/* Hand image element (used for drawing on canvas) */}
                     <img ref={HandRef} />
-                    <img ref={mosquitoRef} src={mosquitoImage} />
+                    <img ref={mosquitoRef} src={mosquitoImage} height={50} width={50}/>
                 </div>
             </>
             )
