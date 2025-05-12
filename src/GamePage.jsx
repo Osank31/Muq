@@ -213,6 +213,7 @@ const GamePage = () => {
                         updatedMosquitoArray.forEach((mosquito) => {
                             // console.log(mosquitoRef.current)
                             if (mosquitoRef.current && mosquitoRef.current.complete) {
+                                //  height widht to screen start point problem
                                 gameCtx.drawImage(mosquitoRef.current, mosquito.x, mosquito.y, 500, 500);
                             }
 
