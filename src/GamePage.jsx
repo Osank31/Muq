@@ -37,24 +37,7 @@ const GamePage = () => {
         return theta;
     }
 
-    // useEffect(() => {
-    //     const handleKeyDown = (e) => {
-    //         if (e.key === 'm') {
-    //             const newMosquito = {
-    //                 id: Date.now(),
-    //                 x: 0,
-    //                 y: 0,
-    //                 targetX: 640,
-    //                 targetY: 480,
-    //                 speed: 5
-    //             };
 
-    //             setMosquitoes((prev) => [...prev, newMosquito]);
-    //         }
-    //     }
-    //     window.addEventListener('keydown', handleKeyDown);
-    //     return () => window.removeEventListener('keydown', handleKeyDown);
-    // }, [])
 
     useEffect(() => {
         callFunctionRandomly(() => {
