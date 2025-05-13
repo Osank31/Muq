@@ -10,6 +10,7 @@ import { getHandedness, getHandState } from './components/handFunctions.js';
 import RoomImage from '/how-to-draw-a-room-featured-image-1200.webp'
 import mosquitoImage from '/ChatGPT Image May 11, 2025, 09_14_53 AM.png'
 import Timer from './components/Timer.jsx';
+import { callFunctionRandomly } from './components/getRandomInterval.js'
 
 const GamePage = () => {
 
@@ -36,26 +37,38 @@ const GamePage = () => {
         return theta;
     }
 
-    useEffect(() => {
-        const handleKeyDown = (e) => {
-            if (e.key === 'm') {
-                const newMosquito = {
-                    id: Date.now(),
-                    x: 0,
-                    y: 0,
-                    targetX: 640,
-                    targetY: 480,
-                    speed: 5
-                };
+    // useEffect(() => {
+    //     const handleKeyDown = (e) => {
+    //         if (e.key === 'm') {
+    //             const newMosquito = {
+    //                 id: Date.now(),
+    //                 x: 0,
+    //                 y: 0,
+    //                 targetX: 640,
+    //                 targetY: 480,
+    //                 speed: 5
+    //             };
 
-                setMosquitoes((prev) => [...prev, newMosquito]);
-            }
-        }
-        window.addEventListener('keydown', handleKeyDown);
-        return () => window.removeEventListener('keydown', handleKeyDown);
-    }, [])
+    //             setMosquitoes((prev) => [...prev, newMosquito]);
+    //         }
+    //     }
+    //     window.addEventListener('keydown', handleKeyDown);
+    //     return () => window.removeEventListener('keydown', handleKeyDown);
+    // }, [])
 
     useEffect(() => {
+        callFunctionRandomly(() => {
+            const newMosquito = {
+                id: Date.now(),
+                x: 0,
+                y: 0,
+                targetX: 640,
+                targetY: 480,
+                speed: 5
+            };
+
+            setMosquitoes((prev) => [...prev, newMosquito]);
+        })
         const loadModelAndDetect = async () => {
             await tf.setBackend('webgl');
             await tf.ready();
@@ -141,7 +154,6 @@ const GamePage = () => {
                             const dist = (dx ** 2 + dy ** 2);
 
                             if (dist === 0) {
-                                // Set new random target when close to current one
                                 return {
                                     ...mosquito,
                                 };
@@ -150,24 +162,21 @@ const GamePage = () => {
                             const dirX = dx === 0 ? 0 : dx / Math.abs(dx);
                             const dirY = dy === 0 ? 0 : dy / Math.abs(dy);
 
-                            // console.log(dx);
-
                             return {
                                 ...mosquito,
                                 x: mosquito.x + dirX * mosquito.speed * Math.abs(Math.cos(mosquito.theta)),
                                 y: mosquito.y + dirY * mosquito.speed * Math.abs(Math.sin(theta)),
                             };
                         })
-                        .filter(mosquito => mosquito.x !== mosquito.targetX || mosquito.y !== mosquito.targetY);
+                            .filter(mosquito => mosquito.x !== mosquito.targetX || mosquito.y !== mosquito.targetY);
 
-                        // console.log(...updatedMosquitoArray)
+                        console.log(...updatedMosquitoArray)
                         updatedMosquitoArray.forEach((mosquito) => {
                             if (mosquitoRef.current && mosquitoRef.current.complete) {
                                 gameCtx.drawImage(mosquitoRef.current, Math.abs(mosquito.x), Math.abs(mosquito.y), 200, 200 / 1.5);
                             }
                         })
                         return updatedMosquitoArray;
-
                     })
 
                     ctx.restore();
