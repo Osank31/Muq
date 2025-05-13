@@ -32,26 +32,92 @@ const GamePage = () => {
         // Timer complete handler
     }
 
+    const getRandom = (a, b) => {
+        return Math.floor(Math.random() * (b - a + 1)) + a;
+    };
+
+
+    const getRandomInitial = (canvasWidth, canvasHeight, dx, dy) => {
+        let n = Math.floor(Math.random() * (8 - 1 + 1) + 1);
+        switch (n) {
+            case 1:
+                var x = getRandom(-dx, 0);
+                var y = getRandom(-dy, 0);
+                return [x, y, n];
+            case 2:
+                var x = getRandom(-dx, 0);
+                var y = getRandom(0, canvasHeight);
+                return [x, y, n];
+            case 3:
+                var x = getRandom(-dx, 0);
+                var y = getRandom(canvasHeight, canvasHeight + dy);
+                return [x, y, n];
+            case 4:
+                var x = getRandom(0, canvasWidth);
+                var y = getRandom(canvasHeight, canvasHeight + dy);
+                return [x, y, n];
+            case 5:
+                var x = getRandom(canvasWidth, canvasWidth + dx);
+                var y = getRandom(canvasHeight, canvasHeight + dy);
+                return [x, y, n];
+            case 6:
+                var x = getRandom(canvasWidth, canvasWidth + dx);
+                var y = getRandom(0, canvasHeight);
+                return [x, y, n];
+            case 7:
+                var x = getRandom(canvasWidth, canvasWidth + dx);
+                var y = getRandom(-dy, 0);
+                return [x, y, n];
+            case 8:
+                var x = getRandom(0, canvasWidth);
+                var y = getRandom(-dy, 0);
+                return [x, y, n];
+        }
+    }
+
     const calculateAngle = (x1, y1, x2, y2) => {
         let theta = Math.atan2(y2 - y1, x2 - x1)
         return theta;
     }
 
+    useEffect(() => {
+        const handleKeyDown = (e) => {
+            if (e.key === 'm') {
+                let [intialX, initialY, n] = getRandomInitial(640, 480, 400, 400 / 1.5);
+                const theta = calculateAngle(intialX, initialY, 320, 240);
+                // console.log(intialX, initialY)
+                const newMosquito = {
+                    id: Date.now(),
+                    x: intialX,
+                    y: initialY,
+                    targetX: 320,
+                    targetY: 240,
+                    speed: getRandom(5, 10),
+                    intialX: intialX,
+                    initialY: initialY,
+                    theta
+                };
 
+                setMosquitoes((prev) => [...prev, newMosquito]);
+            }
+        }
+        window.addEventListener('keydown', handleKeyDown);
+        return () => window.removeEventListener('keydown', handleKeyDown);
+    }, [])
 
     useEffect(() => {
-        callFunctionRandomly(() => {
-            const newMosquito = {
-                id: Date.now(),
-                x: 0,
-                y: 0,
-                targetX: 640,
-                targetY: 480,
-                speed: 5
-            };
+        // callFunctionRandomly(() => {
+        //     const newMosquito = {
+        //         id: Date.now(),
+        //         x: 0,
+        //         y: 0,
+        //         targetX: 640,
+        //         targetY: 480,
+        //         speed: 5
+        //     };
 
-            setMosquitoes((prev) => [...prev, newMosquito]);
-        })
+        //     setMosquitoes((prev) => [...prev, newMosquito]);
+        // })
         const loadModelAndDetect = async () => {
             await tf.setBackend('webgl');
             await tf.ready();
@@ -127,12 +193,8 @@ const GamePage = () => {
                     setMosquitoes((mosquitoArray) => {
                         const updatedMosquitoArray = mosquitoArray.map(mosquito => {
 
-                            const theta = calculateAngle(mosquito.x, mosquito.y, mosquito.targetX, mosquito.targetY);
-
-                            mosquito.theta = theta;
-
-                            const dx = mosquito.targetX - mosquito.x;
-                            const dy = mosquito.targetY - mosquito.y;
+                            const dx = mosquito.targetX - mosquito.intialX;
+                            const dy = mosquito.targetY - mosquito.initialY;
 
                             const dist = (dx ** 2 + dy ** 2);
 
@@ -141,19 +203,15 @@ const GamePage = () => {
                                     ...mosquito,
                                 };
                             }
-
-                            const dirX = dx === 0 ? 0 : dx / Math.abs(dx);
-                            const dirY = dy === 0 ? 0 : dy / Math.abs(dy);
-
                             return {
                                 ...mosquito,
-                                x: mosquito.x + dirX * mosquito.speed * Math.abs(Math.cos(mosquito.theta)),
-                                y: mosquito.y + dirY * mosquito.speed * Math.abs(Math.sin(theta)),
+                                x: mosquito.x + mosquito.speed * Math.cos(mosquito.theta),
+                                y: mosquito.y + mosquito.speed * Math.sin(mosquito.theta),
                             };
                         })
-                            .filter(mosquito => mosquito.x !== mosquito.targetX || mosquito.y !== mosquito.targetY);
-
-                        console.log(...updatedMosquitoArray)
+                            .filter(mosquito => !(Math.abs(mosquito.x - mosquito.targetX) < 5 && Math.abs(mosquito.y - mosquito.targetY) < 5));
+                        if (updatedMosquitoArray.length > 0)
+                            console.log(`x=${updatedMosquitoArray[0].x}, y=${updatedMosquitoArray[0].y}`)
                         updatedMosquitoArray.forEach((mosquito) => {
                             if (mosquitoRef.current && mosquitoRef.current.complete) {
                                 gameCtx.drawImage(mosquitoRef.current, Math.abs(mosquito.x), Math.abs(mosquito.y), 200, 200 / 1.5);
