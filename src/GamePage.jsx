@@ -30,21 +30,10 @@ const GamePage = () => {
     const handleOnComplete = () => {
         // Timer complete handler
     }
-    // Calculate incenter of triangle formed by three hand keypoints
-    const getIncenter = (x1, y1, x2, y2, x3, y3) => {
-        let a = Math.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2);
-        let b = Math.sqrt((x2 - x3) ** 2 + (y2 - y3) ** 2);
-        let c = Math.sqrt((x1 - x3) ** 2 + (y1 - y3) ** 2);
 
-        return [
-            (a * x1 + b * x2 + c * x3) / (a + b + c),
-            (a * y1 + b * y2 + c * y3) / (a + b + c),
-        ];
-    }
-
-    // Transform coordinates if needed (currently passthrough)
-    const transformAxis = (x, y) => {
-        return [x, y]
+    const calculateAngle = (x1, y1, x2, y2) => {
+        let theta = Math.atan2(y2 - y1, x2 - x1)
+        return theta;
     }
 
     useEffect(() => {
@@ -54,8 +43,8 @@ const GamePage = () => {
                     id: Date.now(),
                     x: 0,
                     y: 0,
-                    targetX: -640,
-                    targetY: -480,
+                    targetX: 640,
+                    targetY: 480,
                     speed: 5
                 };
 
@@ -65,10 +54,6 @@ const GamePage = () => {
         window.addEventListener('keydown', handleKeyDown);
         return () => window.removeEventListener('keydown', handleKeyDown);
     }, [])
-
-    // useEffect(() => {
-    //     // console.log(...mosquitoes);
-    // }, [mosquitoes]);
 
     useEffect(() => {
         const loadModelAndDetect = async () => {
@@ -122,14 +107,6 @@ const GamePage = () => {
                         predictions[0].handedness = getHandedness(predictions[0].handedness);
                         predictions[0].handState = getHandState(predictions[0].keypoints, predictions[0].handedness);
 
-                        let incenter = getIncenter(
-                            predictions[0].keypoints[0].x, predictions[0].keypoints[0].y,
-                            predictions[0].keypoints[5].x, predictions[0].keypoints[5].y,
-                            predictions[0].keypoints[17].x, predictions[0].keypoints[17].y
-                        );
-
-                        let handCoordinates = transformAxis(incenter[0], incenter[1]);
-
                         if (HandRef.current) {
                             if (predictions[0].handState === 'Open')
                                 HandRef.current.src = OpenHandImage;
@@ -137,21 +114,7 @@ const GamePage = () => {
                                 HandRef.current.src = ClosedHandImage;
                         }
 
-                        if (HandRef.current && HandRef.current.complete) {
-                            if (handCoordinates[0] >= 0 && handCoordinates[0] < 640 &&
-                                handCoordinates[1] >= 0 && handCoordinates[1] < 480
-                            ) {
-                                if (HandRef.current.src.includes(`open_hand-removebg-preview.png`)) {
-                                    gameCtx.drawImage(HandRef.current, handCoordinates[0], handCoordinates[1], 190.2435, 229.5)
-                                }
-                                else {
-                                    gameCtx.drawImage(HandRef.current, handCoordinates[0], handCoordinates[1], 170.2435, 170.2435 / 1.26829)
-                                }
-                            }
-                            else {
-                                console.warn(`outside`)
-                            }
-                        }
+
 
                         predictions[0].keypoints.forEach(coordinates => {
                             const [x, y] = [coordinates.x, coordinates.y]
@@ -165,34 +128,19 @@ const GamePage = () => {
                         HandRef.current.style.visibility = 'hidden';
                     }
 
-                    // setMosquitoes(prevMosquitoes => {
-                    //     const updated = prevMosquitoes.map(m => {
-                    //         const dx = m.targetX - m.x;
-                    //         const dy = m.targetY - m.y;
-                    //         const dist = Math.sqrt(dx * dx + dy * dy);
-                    //         if (dist < 2) return m;
-                    //         return {
-                    //             ...m,
-                    //             x: m.x + (dx / dist) * m.speed,
-                    //             y: m.y + (dy / dist) * m.speed
-                    //         };
-                    //     });
-
-                    //     updated.forEach(m => {
-                    //         gameCtx.drawImage(mosquitoRef.current, m.x, m.y, 50, 50);
-                    //     });
-
-                    //     return updated;
-                    // });
-
                     setMosquitoes((mosquitoArray) => {
                         const updatedMosquitoArray = mosquitoArray.map(mosquito => {
-                            const dx = mosquito.targetX - mosquito.x;;
+
+                            const theta = calculateAngle(mosquito.x, mosquito.y, mosquito.targetX, mosquito.targetY);
+
+                            mosquito.theta = theta;
+
+                            const dx = mosquito.targetX - mosquito.x;
                             const dy = mosquito.targetY - mosquito.y;
 
                             const dist = (dx ** 2 + dy ** 2);
 
-                            if (dist < 1) {
+                            if (dist === 0) {
                                 // Set new random target when close to current one
                                 return {
                                     ...mosquito,
@@ -202,21 +150,21 @@ const GamePage = () => {
                             const dirX = dx === 0 ? 0 : dx / Math.abs(dx);
                             const dirY = dy === 0 ? 0 : dy / Math.abs(dy);
 
+                            // console.log(dx);
+
                             return {
                                 ...mosquito,
-                                x: mosquito.x + dirX * mosquito.speed,
-                                y: mosquito.y + dirY * mosquito.speed,
+                                x: mosquito.x + dirX * mosquito.speed * Math.abs(Math.cos(mosquito.theta)),
+                                y: mosquito.y + dirY * mosquito.speed * Math.abs(Math.sin(theta)),
                             };
                         })
+                        .filter(mosquito => mosquito.x !== mosquito.targetX || mosquito.y !== mosquito.targetY);
 
-                        console.log(...updatedMosquitoArray)
+                        // console.log(...updatedMosquitoArray)
                         updatedMosquitoArray.forEach((mosquito) => {
-                            // console.log(mosquitoRef.current)
                             if (mosquitoRef.current && mosquitoRef.current.complete) {
-                                //  height widht to screen start point problem
-                                gameCtx.drawImage(mosquitoRef.current, mosquito.x, mosquito.y, 500, 500);
+                                gameCtx.drawImage(mosquitoRef.current, Math.abs(mosquito.x), Math.abs(mosquito.y), 200, 200 / 1.5);
                             }
-
                         })
                         return updatedMosquitoArray;
 
