@@ -36,6 +36,19 @@ const GamePage = () => {
         return Math.floor(Math.random() * (b - a + 1)) + a;
     };
 
+    function getRandomFromIntervals(intervals) {
+        if (!Array.isArray(intervals) || intervals.length === 0) {
+            throw new Error("Intervals must be a non-empty array");
+        }
+        const intervalIndex = Math.floor(Math.random() * intervals.length);
+        const [min, max] = intervals[intervalIndex];
+
+        if (min > max) {
+            throw new Error(`Invalid interval: [${min}, ${max}]`);
+        }
+        return Math.floor(Math.random() * (max - min) + min);
+    }
+
 
     const getRandomInitial = (canvasWidth, canvasHeight, dx, dy) => {
         let n = Math.floor(Math.random() * (8 - 1 + 1) + 1);
@@ -75,49 +88,236 @@ const GamePage = () => {
         }
     }
 
+    const getRandomFinal = (canvasWidth, canvasHeight, dx, dy, n) => {
+        switch (n) {
+            case 1:
+                var n2 = getRandom(4, 6);
+                switch (n2) {
+                    case 4:
+                        var x = getRandom(0, canvasWidth);
+                        var y = getRandom(canvasHeight, canvasHeight + dy);
+                        return [x, y, n2];
+                    case 5:
+                        var x = getRandom(canvasWidth, canvasWidth + dx);
+                        var y = getRandom(canvasHeight, canvasHeight + dy);
+                        return [x, y, n2];
+                    case 6:
+                        var x = getRandom(canvasWidth, canvasWidth + dx);
+                        var y = getRandom(0, canvasHeight);
+                        return [x, y, n2];
+                }
+                break;
+            case 2:
+                var n2 = getRandom(4, 8);
+                switch (n2) {
+                    case 4:
+                        var x = getRandom(0, canvasWidth);
+                        var y = getRandom(canvasHeight, canvasHeight + dy);
+                        return [x, y, n2];
+                    case 5:
+                        var x = getRandom(canvasWidth, canvasWidth + dx);
+                        var y = getRandom(canvasHeight, canvasHeight + dy);
+                        return [x, y, n2];
+                    case 6:
+                        var x = getRandom(canvasWidth, canvasWidth + dx);
+                        var y = getRandom(0, canvasHeight);
+                        return [x, y, n2];
+                    case 7:
+                        var x = getRandom(canvasWidth, canvasWidth + dx);
+                        var y = getRandom(-dy, 0);
+                        return [x, y, n2];
+                    case 8:
+                        var x = getRandom(0, canvasWidth);
+                        var y = getRandom(-dy, 0);
+                        return [x, y, n2];
+                }
+                break;
+            case 3:
+                var n2 = getRandom(6, 8);
+                switch (n2) {
+                    case 6:
+                        var x = getRandom(canvasWidth, canvasWidth + dx);
+                        var y = getRandom(0, canvasHeight);
+                        return [x, y, n2];
+                    case 7:
+                        var x = getRandom(canvasWidth, canvasWidth + dx);
+                        var y = getRandom(-dy, 0);
+                        return [x, y, n2];
+                    case 8:
+                        var x = getRandom(0, canvasWidth);
+                        var y = getRandom(-dy, 0);
+                        return [x, y, n2];
+                }
+                break;
+            case 4:
+                var n2 = getRandomFromIntervals([[6, 8], [1, 2]])
+                switch (n2) {
+                    case 1:
+                        var x = getRandom(-dx, 0);
+                        var y = getRandom(-dy, 0);
+                        return [x, y, n2];
+                    case 2:
+                        var x = getRandom(-dx, 0);
+                        var y = getRandom(0, canvasHeight);
+                        return [x, y, n2];
+                    case 6:
+                        var x = getRandom(canvasWidth, canvasWidth + dx);
+                        var y = getRandom(0, canvasHeight);
+                        return [x, y, n2];
+                    case 7:
+                        var x = getRandom(canvasWidth, canvasWidth + dx);
+                        var y = getRandom(-dy, 0);
+                        return [x, y, n2];
+                    case 8:
+                        var x = getRandom(0, canvasWidth);
+                        var y = getRandom(-dy, 0);
+                        return [x, y, n2];
+
+                }
+                break;
+            case 5:
+                var n2 = getRandomFromIntervals([[1, 2], [8, 8]]);
+                switch (n2) {
+                    case 1:
+                        var x = getRandom(-dx, 0);
+                        var y = getRandom(-dy, 0);
+                        return [x, y, n2];
+                    case 2:
+                        var x = getRandom(-dx, 0);
+                        var y = getRandom(0, canvasHeight);
+                        return [x, y, n2];
+                    case 8:
+                        var x = getRandom(0, canvasWidth);
+                        var y = getRandom(-dy, 0);
+                        return [x, y, n2];
+                }
+                break;
+            case 6:
+                var n2 = getRandomFromIntervals([[1, 4], [8, 8]]);
+                switch (n2) {
+                    case 1:
+                        var x = getRandom(-dx, 0);
+                        var y = getRandom(-dy, 0);
+                        return [x, y, n2];
+                    case 2:
+                        var x = getRandom(-dx, 0);
+                        var y = getRandom(0, canvasHeight);
+                        return [x, y, n2];
+                    case 3:
+                        var x = getRandom(-dx, 0);
+                        var y = getRandom(canvasHeight, canvasHeight + dy);
+                        return [x, y, n2];
+                    case 4:
+                        var x = getRandom(0, canvasWidth);
+                        var y = getRandom(canvasHeight, canvasHeight + dy);
+                        return [x, y, n2];
+                    case 8:
+                        var x = getRandom(0, canvasWidth);
+                        var y = getRandom(-dy, 0);
+                        return [x, y, n2];
+                }
+                break;
+            case 7:
+                var n2 = getRandom(2, 4);
+                switch (n2) {
+                    case 2:
+                        var x = getRandom(-dx, 0);
+                        var y = getRandom(0, canvasHeight);
+                        return [x, y, n2];
+                    case 3:
+                        var x = getRandom(-dx, 0);
+                        var y = getRandom(canvasHeight, canvasHeight + dy);
+                        return [x, y, n2];
+                    case 4:
+                        var x = getRandom(0, canvasWidth);
+                        var y = getRandom(canvasHeight, canvasHeight + dy);
+                        return [x, y, n2];
+                }
+                break;
+            case 8:
+                var n2 = getRandom(2, 6);
+                switch (n2) {
+                    case 2:
+                        var x = getRandom(-dx, 0);
+                        var y = getRandom(0, canvasHeight);
+                        return [x, y, n2];
+                    case 3:
+                        var x = getRandom(-dx, 0);
+                        var y = getRandom(canvasHeight, canvasHeight + dy);
+                        return [x, y, n2];
+                    case 4:
+                        var x = getRandom(0, canvasWidth);
+                        var y = getRandom(canvasHeight, canvasHeight + dy);
+                        return [x, y, n2];
+                    case 5:
+                        var x = getRandom(canvasWidth, canvasWidth + dx);
+                        var y = getRandom(canvasHeight, canvasHeight + dy);
+                        return [x, y, n2];
+                    case 6:
+                        var x = getRandom(canvasWidth, canvasWidth + dx);
+                        var y = getRandom(0, canvasHeight);
+                        return [x, y, n2];
+                }
+                break;
+            default:
+                return [640, 480, -1];
+        }
+    }
+
     const calculateAngle = (x1, y1, x2, y2) => {
         let theta = Math.atan2(y2 - y1, x2 - x1)
         return theta;
     }
 
+    // useEffect(() => {
+    //     const handleKeyDown = (e) => {
+    //         if (e.key === 'm') {
+    //             let [intialX, initialY, n] = getRandomInitial(640, 480, 400, 400 / 1.5);
+    //             let [targetX, targetY, n2] = getRandomFinal(640, 480, 400, 400 / 1.5, n)
+    //             const theta = calculateAngle(intialX, initialY, targetX, targetY);
+    //             // console.log(intialX, initialY)
+    //             // console.log(targetX, targetY)
+    //             const newMosquito = {
+    //                 id: Date.now(),
+    //                 x: intialX,
+    //                 y: initialY,
+    //                 targetX: targetX,
+    //                 targetY: targetY,
+    //                 speed: getRandom(5, 10),
+    //                 intialX: intialX,
+    //                 initialY: initialY,
+    //                 theta
+    //             };
+
+    //             setMosquitoes((prev) => [...prev, newMosquito]);
+    //         }
+    //     }
+    //     window.addEventListener('keydown', handleKeyDown);
+    //     return () => window.removeEventListener('keydown', handleKeyDown);
+    // }, [])
+
     useEffect(() => {
-        const handleKeyDown = (e) => {
-            if (e.key === 'm') {
-                let [intialX, initialY, n] = getRandomInitial(640, 480, 400, 400 / 1.5);
-                const theta = calculateAngle(intialX, initialY, 320, 240);
-                // console.log(intialX, initialY)
-                const newMosquito = {
-                    id: Date.now(),
-                    x: intialX,
-                    y: initialY,
-                    targetX: 320,
-                    targetY: 240,
-                    speed: getRandom(5, 10),
-                    intialX: intialX,
-                    initialY: initialY,
-                    theta
-                };
+        callFunctionRandomly(() => {
+            let [intialX, initialY, n] = getRandomInitial(640, 480, 400, 400 / 1.5);
+            let [targetX, targetY] = getRandomFinal(640, 480, 400, 400 / 1.5, n)
+            const theta = calculateAngle(intialX, initialY, targetX, targetY);
+            // console.log(intialX, initialY)
+            // console.log(targetX, targetY)
+            const newMosquito = {
+                id: Date.now(),
+                x: intialX,
+                y: initialY,
+                targetX: targetX,
+                targetY: targetY,
+                speed: getRandom(5, 10),
+                intialX: intialX,
+                initialY: initialY,
+                theta
+            };
 
-                setMosquitoes((prev) => [...prev, newMosquito]);
-            }
-        }
-        window.addEventListener('keydown', handleKeyDown);
-        return () => window.removeEventListener('keydown', handleKeyDown);
-    }, [])
+            setMosquitoes((prev) => [...prev, newMosquito]);
+        })
 
-    useEffect(() => {
-        // callFunctionRandomly(() => {
-        //     const newMosquito = {
-        //         id: Date.now(),
-        //         x: 0,
-        //         y: 0,
-        //         targetX: 640,
-        //         targetY: 480,
-        //         speed: 5
-        //     };
-
-        //     setMosquitoes((prev) => [...prev, newMosquito]);
-        // })
         const loadModelAndDetect = async () => {
             await tf.setBackend('webgl');
             await tf.ready();
@@ -211,12 +411,12 @@ const GamePage = () => {
                         })
                             .filter(mosquito => !(Math.abs(mosquito.x - mosquito.targetX) < 5 && Math.abs(mosquito.y - mosquito.targetY) < 5));
                         if (updatedMosquitoArray.length > 0)
-                            console.log(`x=${updatedMosquitoArray[0].x}, y=${updatedMosquitoArray[0].y}`)
-                        updatedMosquitoArray.forEach((mosquito) => {
-                            if (mosquitoRef.current && mosquitoRef.current.complete) {
-                                gameCtx.drawImage(mosquitoRef.current, Math.abs(mosquito.x), Math.abs(mosquito.y), 200, 200 / 1.5);
-                            }
-                        })
+                            // console.log(`x=${updatedMosquitoArray[0].x}, y=${updatedMosquitoArray[0].y}`)
+                            updatedMosquitoArray.forEach((mosquito) => {
+                                if (mosquitoRef.current && mosquitoRef.current.complete) {
+                                    gameCtx.drawImage(mosquitoRef.current, (mosquito.x), (mosquito.y), 200, 200 / 1.5);
+                                }
+                            })
                         return updatedMosquitoArray;
                     })
 
