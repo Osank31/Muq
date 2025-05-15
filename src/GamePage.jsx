@@ -10,6 +10,7 @@ import { getHandedness, getHandState } from './components/handFunctions.js';
 import RoomImage from '/how-to-draw-a-room-featured-image-1200.webp'
 import mosquitoImage from '/ChatGPT Image May 11, 2025, 09_14_53 AM.png'
 import Timer from './components/Timer.jsx';
+import Dot from '/public/red_dot_5x5.png'
 import { callFunctionRandomly } from './components/getRandomInterval.js'
 
 const GamePage = () => {
@@ -21,6 +22,7 @@ const GamePage = () => {
     const gameRef = useRef(null);
     const roomRef = useRef(null);
     const mosquitoRef = useRef(null);
+    const DotRef = useRef(null);
     // const mosquitoPositionRef = useRef({ x: 0, y: 0 });
 
     const [loading, setLoading] = useState(true);
@@ -269,54 +271,76 @@ const GamePage = () => {
         return theta;
     }
 
-    // useEffect(() => {
-    //     const handleKeyDown = (e) => {
-    //         if (e.key === 'm') {
-    //             let [intialX, initialY, n] = getRandomInitial(640, 480, 400, 400 / 1.5);
-    //             let [targetX, targetY, n2] = getRandomFinal(640, 480, 400, 400 / 1.5, n)
-    //             const theta = calculateAngle(intialX, initialY, targetX, targetY);
-    //             // console.log(intialX, initialY)
-    //             // console.log(targetX, targetY)
-    //             const newMosquito = {
-    //                 id: Date.now(),
-    //                 x: intialX,
-    //                 y: initialY,
-    //                 targetX: targetX,
-    //                 targetY: targetY,
-    //                 speed: getRandom(5, 10),
-    //                 intialX: intialX,
-    //                 initialY: initialY,
-    //                 theta
-    //             };
+    const camHandCoordinatesToGameHandCoordinates = (x, y, camSize = [1280, 720], gameSize = [640, 480]) => {
+        let [x1, y1] = camSize;
+        let [x2, y2] = gameSize;
 
-    //             setMosquitoes((prev) => [...prev, newMosquito]);
-    //         }
-    //     }
-    //     window.addEventListener('keydown', handleKeyDown);
-    //     return () => window.removeEventListener('keydown', handleKeyDown);
-    // }, [])
+        let _x = (x1 - x2) / 2;
+        let _y = (y1 - y2) / 2;
+
+        return [x - _x, y - _y];
+    }
+
+    const getIncenter = ([x1, y1], [x2, y2], [x3, y3]) => {
+        let a, b, c;
+        a = Math.hypot(y3 - y2, x3 - x2);
+        b = Math.hypot(x3 - x1, y3 - y1);
+        c = Math.hypot(y2 - y1, x2 - x1);
+
+        return [
+            (a * x1 + b * x2 + c * x3) / (a + b + c),
+            (a * y1 + b * y2 + c * y3) / (a + b + c)
+        ]
+    }
 
     useEffect(() => {
-        callFunctionRandomly(() => {
-            let [intialX, initialY, n] = getRandomInitial(640, 480, 400, 400 / 1.5);
-            let [targetX, targetY] = getRandomFinal(640, 480, 400, 400 / 1.5, n)
-            const theta = calculateAngle(intialX, initialY, targetX, targetY);
-            // console.log(intialX, initialY)
-            // console.log(targetX, targetY)
-            const newMosquito = {
-                id: Date.now(),
-                x: intialX,
-                y: initialY,
-                targetX: targetX,
-                targetY: targetY,
-                speed: getRandom(5, 10),
-                intialX: intialX,
-                initialY: initialY,
-                theta
-            };
+        const handleKeyDown = (e) => {
+            if (e.key === 'm') {
+                let [intialX, initialY, n] = getRandomInitial(640, 480, 400, 400 / 1.5);
+                let [targetX, targetY, n2] = getRandomFinal(640, 480, 400, 400 / 1.5, n)
+                const theta = calculateAngle(intialX, initialY, targetX, targetY);
+                // console.log(intialX, initialY)
+                // console.log(targetX, targetY)
+                const newMosquito = {
+                    id: Date.now(),
+                    x: intialX,
+                    y: initialY,
+                    targetX,
+                    targetY,
+                    speed: getRandom(5, 15),
+                    intialX,
+                    initialY,
+                    theta
+                };
 
-            setMosquitoes((prev) => [...prev, newMosquito]);
-        })
+                setMosquitoes((prev) => [...prev, newMosquito]);
+            }
+        }
+        window.addEventListener('keydown', handleKeyDown);
+        return () => window.removeEventListener('keydown', handleKeyDown);
+    }, [])
+
+    useEffect(() => {
+        // callFunctionRandomly(() => {
+        //     let [intialX, initialY, n] = getRandomInitial(640, 480, 400, 400 / 1.5);
+        //     let [targetX, targetY] = getRandomFinal(640, 480, 400, 400 / 1.5, n)
+        //     const theta = calculateAngle(intialX, initialY, targetX, targetY);
+        //     // console.log(intialX, initialY)
+        //     // console.log(targetX, targetY)
+        //     const newMosquito = {
+        //         id: Date.now(),
+        //         x: intialX,
+        //         y: initialY,
+        //         targetX: targetX,
+        //         targetY: targetY,
+        //         speed: getRandom(5, 10),
+        //         intialX: intialX,
+        //         initialY: initialY,
+        //         theta
+        //     };
+
+        //     setMosquitoes((prev) => [...prev, newMosquito]);
+        // })
 
         const loadModelAndDetect = async () => {
             await tf.setBackend('webgl');
@@ -359,10 +383,14 @@ const GamePage = () => {
                     gameCtx.clearRect(0, 0, gameRef.current.width, gameRef.current.height)
                     ctx.save();
                     gameCtx.save();
-                    ctx.scale(-1, 1);
-                    ctx.translate(-canvasRef.current.width, 0);
+                    // ctx.scale(-1, 1);
+                    // ctx.translate(-canvasRef.current.width, 0);
                     ctx.drawImage(videoRef.current, 0, 0, canvasRef.current.width, canvasRef.current.height);
-                    gameCtx.drawImage(roomRef.current, 0, 0, gameRef.current.width, gameRef.current.height)
+                    ctx.lineWidth = "6";
+                    ctx.strokeStyle = "red";
+                    ctx.rect(320, 120, 640, 480);
+                    ctx.stroke();
+                    gameCtx.drawImage(roomRef.current, 0, 0, gameRef.current.width, gameRef.current.height);
 
                     if (predictions.length > 0) {
                         HandRef.current.style.visibility = ''
@@ -374,9 +402,34 @@ const GamePage = () => {
                                 HandRef.current.src = OpenHandImage;
                             if (predictions[0].handState === 'Closed')
                                 HandRef.current.src = ClosedHandImage;
+
+                            // console.log(HandRef.current.height)
                         }
 
+                        // console.log(predictions[0].keypoints[12])                        
+                        console.log(camHandCoordinatesToGameHandCoordinates(predictions[0].keypoints[12].x, predictions[0].keypoints[12].y));
+                        let [incenter_x, incenter_y] = getIncenter(
+                            [predictions[0].keypoints[0].x, predictions[0].keypoints[0].y],
+                            [predictions[0].keypoints[5].x, predictions[0].keypoints[5].y],
+                            [predictions[0].keypoints[17].x, predictions[0].keypoints[17].y]);
+                        let [x, y] = camHandCoordinatesToGameHandCoordinates(predictions[0].keypoints[12].x, predictions[0].keypoints[12].y)
+                        // gameCtx.drawImage(DotRef.current, x,y, 50, 50)
+                        gameCtx.drawImage(HandRef.current, x, y, 100, 100 / (HandRef.current.width / HandRef.current.height)) 
 
+                        // console.log(getIncenter(
+                        //     [predictions[0].keypoints[0].x, predictions[0].keypoints[0].y],
+                        //     [predictions[0].keypoints[5].x, predictions[0].keypoints[5].y],
+                        //     [predictions[0].keypoints[17].x, predictions[0].keypoints[17].y]
+                        // ))
+
+                        // let [incenter_x, incenter_y] = getIncenter([
+                        //     predictions[0].keypoints[0].x, predictions[0].keypoints[0].y],
+                        //     [predictions[0].keypoints[5].x, predictions[0].keypoints[5].y],
+                        //     [predictions[0].keypoints[17].x, predictions[0].keypoints[17].y]);
+
+                        // console.log(HandRef.current, incenter_x, incenter_y)
+
+                        // gameCtx.drawImage(HandRef.current, 640-incenter_x, incenter_y, 120, 120)
 
                         predictions[0].keypoints.forEach(coordinates => {
                             const [x, y] = [coordinates.x, coordinates.y]
@@ -385,6 +438,8 @@ const GamePage = () => {
                             ctx.fillStyle = 'red';
                             ctx.fill();
                         });
+
+                        // console.log(predictions[0].keypoints[12]);
                     }
                     else {
                         HandRef.current.style.visibility = 'hidden';
@@ -419,6 +474,8 @@ const GamePage = () => {
                             })
                         return updatedMosquitoArray;
                     })
+
+
 
                     ctx.restore();
                 }
@@ -508,6 +565,8 @@ const GamePage = () => {
                     <img ref={HandRef} />
                     <img ref={mosquitoRef} src={mosquitoImage} height={50} width={50} />
                 </div>
+                <img src={Dot} ref={DotRef} alt="" />
+
             </>
             )
     )

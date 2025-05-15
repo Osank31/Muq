@@ -2,7 +2,7 @@ function getRandomInterval(min = 1000, max = 5000) {
   return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
-function callFunctionRandomly(fn, min = 1000, max = 5000) {
+function callFunctionRandomly(fn, min = 100, max = 5000) {
   function scheduleNext() {
     const interval = getRandomInterval(min, max);
     setTimeout(() => {
