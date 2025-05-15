@@ -1,12 +1,17 @@
 function getHandedness(handedness) {
-    if (handedness === 'Left')
-        return 'Right'
-    return 'Left'
+    if (handedness === 'Left') return 'Right';
+    return 'Left';
 }
 
 function getHandState(keypoints, handedness) {
     let answer = 'Open';
-    let [thumb, indexFinger, ringFinger, middleFinger, littleFinger] = [false, false, false, false, false];
+    let [thumb, indexFinger, ringFinger, middleFinger, littleFinger] = [
+        false,
+        false,
+        false,
+        false,
+        false,
+    ];
 
     if (keypoints[8].y > keypoints[5].y) {
         indexFinger = true;
@@ -21,21 +26,21 @@ function getHandState(keypoints, handedness) {
         littleFinger = true;
     }
 
-    if (handedness === "Right") {
+    if (handedness === 'Right') {
         if (keypoints[4].x < keypoints[2].x) {
             thumb = true;
         }
-    } else if (handedness === "Left") {
+    } else if (handedness === 'Left') {
         if (keypoints[4].x > keypoints[2].x) {
             thumb = true;
         }
     }
 
     if (indexFinger && middleFinger && ringFinger && littleFinger && thumb) {
-        answer = "Closed";
+        answer = 'Closed';
     }
 
     return answer;
 }
 
-export {getHandState, getHandedness}
+export { getHandState, getHandedness };

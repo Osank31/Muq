@@ -1,8 +1,8 @@
-import React, { useRef, useEffect } from "react";
+import React, { useRef, useEffect } from 'react';
 import { gsap } from 'gsap';
 import MusquitoImage from '/ChatGPT Image May 11, 2025, 09_14_53 AM.png';
 import BackgroundImage from '/Gemini_Generated_Image_fpo4mufpo4mufpo4.jpg';
-import Logo from '/mosquito_game_transparent (1).png'
+import Logo from '/mosquito_game_transparent (1).png';
 
 function IntroPage() {
     const boxRef = useRef(null);
@@ -12,7 +12,7 @@ function IntroPage() {
             y: -100,
             duration: 1.5,
             repeat: -1,
-            yoyo: true
+            yoyo: true,
         });
     }, []);
 
@@ -21,7 +21,7 @@ function IntroPage() {
             try {
                 await navigator.mediaDevices.getUserMedia({ video: true });
             } catch (error) {
-                console.error("Camera permission denied", error);
+                console.error('Camera permission denied', error);
             }
         };
         getCameraPermission();
@@ -31,7 +31,7 @@ function IntroPage() {
         <div
             className="min-h-screen w-full bg-cover bg-center grid place-items-center"
             style={{
-                backgroundImage: `url(${BackgroundImage})`
+                backgroundImage: `url(${BackgroundImage})`,
             }}
         >
             <div className="relative flex items-center justify-center">

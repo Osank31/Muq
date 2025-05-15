@@ -1,6 +1,6 @@
 const handleOnComplete = () => {
     // Timer complete handler
-}
+};
 
 const getRandom = (a, b) => {
     return Math.floor(Math.random() * (b - a + 1)) + a;
@@ -8,7 +8,7 @@ const getRandom = (a, b) => {
 
 function getRandomFromIntervals(intervals) {
     if (!Array.isArray(intervals) || intervals.length === 0) {
-        throw new Error("Intervals must be a non-empty array");
+        throw new Error('Intervals must be a non-empty array');
     }
     const intervalIndex = Math.floor(Math.random() * intervals.length);
     const [min, max] = intervals[intervalIndex];
@@ -18,7 +18,6 @@ function getRandomFromIntervals(intervals) {
     }
     return Math.floor(Math.random() * (max - min) + min);
 }
-
 
 const getRandomInitial = (canvasWidth, canvasHeight, dx, dy) => {
     let n = Math.floor(Math.random() * (8 - 1 + 1) + 1);
@@ -56,7 +55,7 @@ const getRandomInitial = (canvasWidth, canvasHeight, dx, dy) => {
             var y = getRandom(-dy, 0);
             return [x, y, n];
     }
-}
+};
 
 const getRandomFinal = (canvasWidth, canvasHeight, dx, dy, n) => {
     switch (n) {
@@ -120,7 +119,10 @@ const getRandomFinal = (canvasWidth, canvasHeight, dx, dy, n) => {
             }
             break;
         case 4:
-            var n2 = getRandomFromIntervals([[6, 8], [1, 2]])
+            var n2 = getRandomFromIntervals([
+                [6, 8],
+                [1, 2],
+            ]);
             switch (n2) {
                 case 1:
                     var x = getRandom(-dx, 0);
@@ -142,11 +144,13 @@ const getRandomFinal = (canvasWidth, canvasHeight, dx, dy, n) => {
                     var x = getRandom(0, canvasWidth);
                     var y = getRandom(-dy, 0);
                     return [x, y, n2];
-
             }
             break;
         case 5:
-            var n2 = getRandomFromIntervals([[1, 2], [8, 8]]);
+            var n2 = getRandomFromIntervals([
+                [1, 2],
+                [8, 8],
+            ]);
             switch (n2) {
                 case 1:
                     var x = getRandom(-dx, 0);
@@ -163,7 +167,10 @@ const getRandomFinal = (canvasWidth, canvasHeight, dx, dy, n) => {
             }
             break;
         case 6:
-            var n2 = getRandomFromIntervals([[1, 4], [8, 8]]);
+            var n2 = getRandomFromIntervals([
+                [1, 4],
+                [8, 8],
+            ]);
             switch (n2) {
                 case 1:
                     var x = getRandom(-dx, 0);
@@ -232,14 +239,19 @@ const getRandomFinal = (canvasWidth, canvasHeight, dx, dy, n) => {
         default:
             return [640, 480, -1];
     }
-}
+};
 
 const calculateAngle = (x1, y1, x2, y2) => {
-    let theta = Math.atan2(y2 - y1, x2 - x1)
+    let theta = Math.atan2(y2 - y1, x2 - x1);
     return theta;
-}
+};
 
-const camHandCoordinatesToGameHandCoordinates = (x, y, camSize = [1280, 720], gameSize = [640, 480]) => {
+const camHandCoordinatesToGameHandCoordinates = (
+    x,
+    y,
+    camSize = [1280, 720],
+    gameSize = [640, 480]
+) => {
     let [x1, y1] = camSize;
     let [x2, y2] = gameSize;
 
@@ -247,7 +259,7 @@ const camHandCoordinatesToGameHandCoordinates = (x, y, camSize = [1280, 720], ga
     let _y = (y1 - y2) / 2;
 
     return [x - _x, y - _y];
-}
+};
 
 const getIncenter = ([x1, y1], [x2, y2], [x3, y3]) => {
     let a, b, c;
@@ -255,11 +267,8 @@ const getIncenter = ([x1, y1], [x2, y2], [x3, y3]) => {
     b = Math.hypot(x3 - x1, y3 - y1);
     c = Math.hypot(y2 - y1, x2 - x1);
 
-    return [
-        (a * x1 + b * x2 + c * x3) / (a + b + c),
-        (a * y1 + b * y2 + c * y3) / (a + b + c)
-    ]
-}
+    return [(a * x1 + b * x2 + c * x3) / (a + b + c), (a * y1 + b * y2 + c * y3) / (a + b + c)];
+};
 
 export {
     handleOnComplete,
@@ -269,5 +278,5 @@ export {
     getRandomFinal,
     calculateAngle,
     camHandCoordinatesToGameHandCoordinates,
-    getIncenter
+    getIncenter,
 };
