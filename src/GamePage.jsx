@@ -20,7 +20,7 @@ import {
     calculateAngle,
     camHandCoordinatesToGameHandCoordinates,
     getIncenter,
-} from './gameUtils.js';
+} from './components/gameUtils.js';
 import { callFunctionRandomly } from './components/getRandomInterval.js';
 
 const GamePage = () => {
