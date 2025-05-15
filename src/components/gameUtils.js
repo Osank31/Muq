@@ -270,6 +270,21 @@ const getIncenter = ([x1, y1], [x2, y2], [x3, y3]) => {
     return [(a * x1 + b * x2 + c * x3) / (a + b + c), (a * y1 + b * y2 + c * y3) / (a + b + c)];
 };
 
+function getRandomInterval(min = 1000, max = 5000) {
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
+function callFunctionRandomly(fn, min = 100, max = 5000) {
+    function scheduleNext() {
+        const interval = getRandomInterval(min, max);
+        setTimeout(() => {
+            fn();
+            scheduleNext();
+        }, interval);
+    }
+    scheduleNext();
+}
+
 export {
     handleOnComplete,
     getRandom,
@@ -279,4 +294,5 @@ export {
     calculateAngle,
     camHandCoordinatesToGameHandCoordinates,
     getIncenter,
+    callFunctionRandomly
 };
