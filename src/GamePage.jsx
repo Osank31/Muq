@@ -7,7 +7,7 @@ import * as handPoseDetection from '@tensorflow-models/hand-pose-detection';
 import OpenHandImage from '/open_hand-removebg-preview.png';
 import ClosedHandImage from '/close_hand-removebg-preview.png';
 import { getHandedness, getHandState } from './components/handFunctions.js';
-import RoomImage from '/how-to-draw-a-room-featured-image-1200.webp';
+import RoomImage from '/ChatGPT Image May 16, 2025, 11_15_35 AM.png';
 import mosquitoImage from '/ChatGPT Image May 11, 2025, 09_14_53 AM.png';
 import Timer from './components/Timer.jsx';
 import Dot from '/public/red_dot_5x5.png';
@@ -38,50 +38,50 @@ const GamePage = () => {
     const [loading, setLoading] = useState(true);
     const [mosquitoes, setMosquitoes] = useState([]);
 
+    // useEffect(() => {
+    //     const handleKeyDown = (e) => {
+    //         if (e.key === 'm') {
+    //             let [intialX, initialY, n] = getRandomInitial(gameRef.current.width, gameRef.current.height, 400, 400 / 1.5);
+    //             let [targetX, targetY, n2] = getRandomFinal(gameRef.current.width, gameRef.current.height, 400, 400 / 1.5, n);
+    //             const theta = calculateAngle(intialX, initialY, targetX, targetY);
+    //             const newMosquito = {
+    //                 id: Date.now(),
+    //                 x: intialX,
+    //                 y: initialY,
+    //                 targetX,
+    //                 targetY,
+    //                 speed: getRandom(5, 15),
+    //                 intialX,
+    //                 initialY,
+    //                 theta
+    //             };
+
+    //             setMosquitoes((prev) => [...prev, newMosquito]);
+    //         }
+    //     }
+    //     window.addEventListener('keydown', handleKeyDown);
+    //     return () => window.removeEventListener('keydown', handleKeyDown);
+    // }, [])
+
     useEffect(() => {
-        const handleKeyDown = (e) => {
-            if (e.key === 'm') {
-                let [intialX, initialY, n] = getRandomInitial(gameRef.current.width, gameRef.current.height, 400, 400 / 1.5);
-                let [targetX, targetY, n2] = getRandomFinal(gameRef.current.width, gameRef.current.height, 400, 400 / 1.5, n);
-                const theta = calculateAngle(intialX, initialY, targetX, targetY);
-                const newMosquito = {
-                    id: Date.now(),
-                    x: intialX,
-                    y: initialY,
-                    targetX,
-                    targetY,
-                    speed: getRandom(5, 15),
-                    intialX,
-                    initialY,
-                    theta
-                };
+        callFunctionRandomly(() => {
+            let [intialX, initialY, n] = getRandomInitial(640, 480, 400, 400 / 1.5);
+            let [targetX, targetY] = getRandomFinal(640, 480, 400, 400 / 1.5, n);
+            const theta = calculateAngle(intialX, initialY, targetX, targetY);
+            const newMosquito = {
+                id: Date.now(),
+                x: intialX,
+                y: initialY,
+                targetX: targetX,
+                targetY: targetY,
+                speed: getRandom(5, 10),
+                intialX: intialX,
+                initialY: initialY,
+                theta,
+            };
 
-                setMosquitoes((prev) => [...prev, newMosquito]);
-            }
-        }
-        window.addEventListener('keydown', handleKeyDown);
-        return () => window.removeEventListener('keydown', handleKeyDown);
-    }, [])
-
-    useEffect(() => {
-        // callFunctionRandomly(() => {
-        //     let [intialX, initialY, n] = getRandomInitial(640, 480, 400, 400 / 1.5);
-        //     let [targetX, targetY] = getRandomFinal(640, 480, 400, 400 / 1.5, n);
-        //     const theta = calculateAngle(intialX, initialY, targetX, targetY);
-        //     const newMosquito = {
-        //         id: Date.now(),
-        //         x: intialX,
-        //         y: initialY,
-        //         targetX: targetX,
-        //         targetY: targetY,
-        //         speed: getRandom(5, 10),
-        //         intialX: intialX,
-        //         initialY: initialY,
-        //         theta,
-        //     };
-
-        //     setMosquitoes((prev) => [...prev, newMosquito]);
-        // });
+            setMosquitoes((prev) => [...prev, newMosquito]);
+        });
 
         const loadModelAndDetect = async () => {
             await tf.setBackend('webgl');
