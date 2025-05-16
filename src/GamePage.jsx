@@ -22,7 +22,6 @@ import {
     getIncenter,
     callFunctionRandomly
 } from './components/gameUtils.js';
-import { callFunctionRandomly } from './components/getRandomInterval.js';
 
 const GamePage = () => {
     const videoRef = useRef(null);
@@ -33,54 +32,56 @@ const GamePage = () => {
     const roomRef = useRef(null);
     const mosquitoRef = useRef(null);
     const DotRef = useRef(null);
+    const handPositionRef = useRef({ x: 0, y: 0 });
+    const prevHandStateRef = useRef('Open');
 
     const [loading, setLoading] = useState(true);
     const [mosquitoes, setMosquitoes] = useState([]);
 
-    // useEffect(() => {
-    //     const handleKeyDown = (e) => {
-    //         if (e.key === 'm') {
-    //             let [intialX, initialY, n] = getRandomInitial(gameRef.current.width, gameRef.current.height, 400, 400 / 1.5);
-    //             let [targetX, targetY, n2] = getRandomFinal(gameRef.current.width, gameRef.current.height, 400, 400 / 1.5, n);
-    //             const theta = calculateAngle(intialX, initialY, targetX, targetY);
-    //             const newMosquito = {
-    //                 id: Date.now(),
-    //                 x: intialX,
-    //                 y: initialY,
-    //                 targetX,
-    //                 targetY,
-    //                 speed: getRandom(5, 15),
-    //                 intialX,
-    //                 initialY,
-    //                 theta
-    //             };
+    useEffect(() => {
+        const handleKeyDown = (e) => {
+            if (e.key === 'm') {
+                let [intialX, initialY, n] = getRandomInitial(gameRef.current.width, gameRef.current.height, 400, 400 / 1.5);
+                let [targetX, targetY, n2] = getRandomFinal(gameRef.current.width, gameRef.current.height, 400, 400 / 1.5, n);
+                const theta = calculateAngle(intialX, initialY, targetX, targetY);
+                const newMosquito = {
+                    id: Date.now(),
+                    x: intialX,
+                    y: initialY,
+                    targetX,
+                    targetY,
+                    speed: getRandom(5, 15),
+                    intialX,
+                    initialY,
+                    theta
+                };
 
-    //             setMosquitoes((prev) => [...prev, newMosquito]);
-    //         }
-    //     }
-    //     window.addEventListener('keydown', handleKeyDown);
-    //     return () => window.removeEventListener('keydown', handleKeyDown);
-    // }, [])
+                setMosquitoes((prev) => [...prev, newMosquito]);
+            }
+        }
+        window.addEventListener('keydown', handleKeyDown);
+        return () => window.removeEventListener('keydown', handleKeyDown);
+    }, [])
 
     useEffect(() => {
-        callFunctionRandomly(() => {
-            let [intialX, initialY, n] = getRandomInitial(640, 480, 400, 400 / 1.5);
-            let [targetX, targetY] = getRandomFinal(640, 480, 400, 400 / 1.5, n);
-            const theta = calculateAngle(intialX, initialY, targetX, targetY);
-            const newMosquito = {
-                id: Date.now(),
-                x: intialX,
-                y: initialY,
-                targetX: targetX,
-                targetY: targetY,
-                speed: getRandom(5, 10),
-                intialX: intialX,
-                initialY: initialY,
-                theta,
-            };
+        // callFunctionRandomly(() => {
+        //     let [intialX, initialY, n] = getRandomInitial(640, 480, 400, 400 / 1.5);
+        //     let [targetX, targetY] = getRandomFinal(640, 480, 400, 400 / 1.5, n);
+        //     const theta = calculateAngle(intialX, initialY, targetX, targetY);
+        //     const newMosquito = {
+        //         id: Date.now(),
+        //         x: intialX,
+        //         y: initialY,
+        //         targetX: targetX,
+        //         targetY: targetY,
+        //         speed: getRandom(5, 10),
+        //         intialX: intialX,
+        //         initialY: initialY,
+        //         theta,
+        //     };
 
-            setMosquitoes((prev) => [...prev, newMosquito]);
-        });
+        //     setMosquitoes((prev) => [...prev, newMosquito]);
+        // });
 
         const loadModelAndDetect = async () => {
             await tf.setBackend('webgl');
@@ -186,69 +187,78 @@ const GamePage = () => {
 
                         if (HandRef.current && HandRef.current.complete) {
                             let size = 125;
-                            if (HandRef.current.src === OpenHandImage)
-                                gameCtx.drawImage(
-                                    HandRef.current,
-                                    x,
-                                    y,
-                                    size,
-                                    size / (HandRef.current.width / HandRef.current.height)
-                                );
-                            else
-                                gameCtx.drawImage(
-                                    HandRef.current,
-                                    x,
-                                    y,
-                                    size,
-                                    size / (HandRef.current.width / HandRef.current.height)
-                                );
-                        }
-                        ``;
+                            gameCtx.drawImage(
+                                HandRef.current,
+                                (640 - x),
+                                y,
+                                size,
+                                size / (HandRef.current.width / HandRef.current.height)
+                            );
+                        };
+
+                        handPositionRef.current = { x: 640 - x, y };
                     } else {
                         HandRef.current.style.visibility = 'hidden';
                     }
 
+                    // console.log(predictions[0])
+                    let currentHandState;
+                    let justClosed;
+
+                    if (predictions.length > 0) {
+                        currentHandState = predictions[0].handState;
+                        justClosed = prevHandStateRef.current === 'Open' && currentHandState === 'Closed';
+                        prevHandStateRef.current = currentHandState;
+                    }
+
+                    console.log(HandRef.current.width, HandRef.current.height)
                     setMosquitoes((mosquitoArray) => {
-                        const updatedMosquitoArray = mosquitoArray
+                        const movedMosquitoes = mosquitoArray
                             .map((mosquito) => {
                                 const dx = mosquito.targetX - mosquito.intialX;
                                 const dy = mosquito.targetY - mosquito.initialY;
-
                                 const dist = dx ** 2 + dy ** 2;
 
-                                if (dist === 0) {
-                                    return {
-                                        ...mosquito,
-                                    };
-                                }
+                                if (dist === 0) return mosquito;
+
                                 return {
                                     ...mosquito,
                                     x: mosquito.x + mosquito.speed * Math.cos(mosquito.theta),
                                     y: mosquito.y + mosquito.speed * Math.sin(mosquito.theta),
                                 };
                             })
-                            .filter(
-                                (mosquito) =>
-                                    !(
-                                        Math.abs(mosquito.x - mosquito.targetX) < 5 &&
-                                        Math.abs(mosquito.y - mosquito.targetY) < 5
-                                    )
-                            );
-                        if (updatedMosquitoArray.length > 0)
-                            updatedMosquitoArray.forEach((mosquito) => {
-                                if (mosquitoRef.current && mosquitoRef.current.complete) {
-                                    gameCtx.drawImage(
-                                        mosquitoRef.current,
-                                        mosquito.x,
-                                        mosquito.y,
-                                        200,
-                                        200 / 1.5
-                                    );
-                                }
+                            .filter((mosquito) => {
+                                const nearTarget =
+                                    Math.abs(mosquito.x - mosquito.targetX) > 5 ||
+                                    Math.abs(mosquito.y - mosquito.targetY) > 5;
+                                return nearTarget;
                             });
-                        return updatedMosquitoArray;
-                    });
 
+                        // Draw all remaining mosquitoes
+                        movedMosquitoes.forEach((mosquito) => {
+                            if (mosquitoRef.current && mosquitoRef.current.complete) {
+                                gameCtx.drawImage(
+                                    mosquitoRef.current,
+                                    mosquito.x,
+                                    mosquito.y,
+                                    200,
+                                    200 / 1.5
+                                );
+                            }
+                        });
+
+                        const filteredMosquitoes = movedMosquitoes.filter((mosquito) => {
+                            const dx = mosquito.x - handPositionRef.current.x;
+                            const dy = mosquito.y - handPositionRef.current.y;
+                            const distance = Math.sqrt(dx * dx + dy * dy);
+                            if (justClosed && distance <= 100) {
+                                return false;
+                            }
+                            return true;
+                        });
+
+                        return filteredMosquitoes;
+                    });
                     ctx.restore();
                 }
                 requestAnimationFrame(detect);
