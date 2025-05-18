@@ -2,16 +2,23 @@ import React from 'react';
 import Test from './Test.jsx';
 import IntroPage from './IntroPage.jsx';
 import GamePage from './GamePage.jsx';
-import Loading from './components/Loading.jsx';
-import Test2 from './Test2.jsx';
+import CamNotAllowed from './CamNotAllowed.jsx';
+import DeviceCheck from './DeviceCheck.jsx'
+import { BrowserRouter, Routes, Route } from 'react-router-dom'
+
 function App() {
     return (
         <>
-            {/* <IntroPage /> */}
-            <GamePage />
-            {/* <Test/> */}
-            {/* <Loading/> */}
-            {/* <Test2 /> */}
+            <DeviceCheck>
+                <BrowserRouter>
+                    <Routes>
+                        <Route path='/' element={<IntroPage />} />
+                        <Route path='/game' element={<GamePage />} />
+                        <Route path='/test' element={<Test />} />
+                        <Route path='/cam-denied' element={<CamNotAllowed />} />
+                    </Routes>
+                </BrowserRouter>
+            </DeviceCheck>
         </>
     );
 }

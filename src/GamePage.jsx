@@ -10,7 +10,8 @@ import { getHandedness, getHandState } from './components/handFunctions.js';
 import RoomImage from '/ChatGPT Image May 16, 2025, 11_15_35 AM.png';
 import mosquitoImage from '/ChatGPT Image May 11, 2025, 09_14_53 AM.png';
 import Timer from './components/Timer.jsx';
-import Dot from '/public/red_dot_5x5.png';
+import Dot from '/red_dot_5x5.png';
+import Loading from './components/Loading.jsx';
 import {
     handleOnComplete,
     getRandom,
@@ -22,6 +23,7 @@ import {
     getIncenter,
     callFunctionRandomly
 } from './components/gameUtils.js';
+import { useNavigate } from 'react-router-dom';
 
 const GamePage = () => {
     const videoRef = useRef(null);
@@ -34,6 +36,9 @@ const GamePage = () => {
     const DotRef = useRef(null);
     const handPositionRef = useRef({ x: 0, y: 0 });
     const prevHandStateRef = useRef('Open');
+    const scoreRef = useRef({ score: 0 });
+
+    const navigate=useNavigate();
 
     const [loading, setLoading] = useState(true);
     const [mosquitoes, setMosquitoes] = useState([]);
@@ -64,24 +69,24 @@ const GamePage = () => {
     // }, [])
 
     useEffect(() => {
-        callFunctionRandomly(() => {
-            let [intialX, initialY, n] = getRandomInitial(640, 480, 400, 400 / 1.5);
-            let [targetX, targetY] = getRandomFinal(640, 480, 400, 400 / 1.5, n);
-            const theta = calculateAngle(intialX, initialY, targetX, targetY);
-            const newMosquito = {
-                id: Date.now(),
-                x: intialX,
-                y: initialY,
-                targetX: targetX,
-                targetY: targetY,
-                speed: getRandom(5, 10),
-                intialX: intialX,
-                initialY: initialY,
-                theta,
-            };
+        // callFunctionRandomly(() => {
+        //     let [intialX, initialY, n] = getRandomInitial(640, 480, 400, 400 / 1.5);
+        //     let [targetX, targetY] = getRandomFinal(640, 480, 400, 400 / 1.5, n);
+        //     const theta = calculateAngle(intialX, initialY, targetX, targetY);
+        //     const newMosquito = {
+        //         id: Date.now(),
+        //         x: intialX,
+        //         y: initialY,
+        //         targetX: targetX,
+        //         targetY: targetY,
+        //         speed: getRandom(5, 10),
+        //         intialX: intialX,
+        //         initialY: initialY,
+        //         theta,
+        //     };
 
-            setMosquitoes((prev) => [...prev, newMosquito]);
-        });
+        //     setMosquitoes((prev) => [...prev, newMosquito]);
+        // });
 
         const loadModelAndDetect = async () => {
             await tf.setBackend('webgl');
@@ -168,7 +173,7 @@ const GamePage = () => {
                         predictions[0].keypoints.forEach((coordinates) => {
                             const [x, y] = [coordinates.x, coordinates.y];
                             ctx.beginPath();
-                            ctx.arc(x, y, 5, 0, 2 * Math.PI);
+                            ctx.arc(x, y, 10, 0, 2 * Math.PI);
                             ctx.fillStyle = 'red';
                             ctx.fill();
                         });
@@ -184,19 +189,25 @@ const GamePage = () => {
                             incenter_y,
                             [canvasRef.current.width, canvasRef.current.height]
                         );
+                        let size = 125;
+                        let handWidth = size;
+                        let handHeight = size / (HandRef.current.width / HandRef.current.height);
+
+                        x = Math.max(0, Math.min(640 - handWidth, 640 - x));
+                        y = Math.max(0, Math.min(480 - handHeight, y));
 
                         if (HandRef.current && HandRef.current.complete) {
                             let size = 125;
                             gameCtx.drawImage(
                                 HandRef.current,
-                                (640 - x),
+                                (x),
                                 y,
                                 size,
                                 size / (HandRef.current.width / HandRef.current.height)
                             );
                         };
 
-                        handPositionRef.current = { x: 640 - x, y };
+                        handPositionRef.current = { x: x, y };
                     } else {
                         HandRef.current.style.visibility = 'hidden';
                     }
@@ -211,7 +222,7 @@ const GamePage = () => {
                         prevHandStateRef.current = currentHandState;
                     }
 
-                    console.log(HandRef.current.width, HandRef.current.height)
+                    // console.log(HandRef.current.width, HandRef.current.height)
                     setMosquitoes((mosquitoArray) => {
                         const movedMosquitoes = mosquitoArray
                             .map((mosquito) => {
@@ -247,11 +258,13 @@ const GamePage = () => {
                             }
                         });
 
+                        // killing logic
                         const filteredMosquitoes = movedMosquitoes.filter((mosquito) => {
                             const dx = mosquito.x - handPositionRef.current.x;
                             const dy = mosquito.y - handPositionRef.current.y;
                             const distance = Math.sqrt(dx * dx + dy * dy);
                             if (justClosed && distance <= 100) {
+                                scoreRef.current.score = scoreRef.current.score + 1;
                                 return false;
                             }
                             return true;
@@ -274,93 +287,168 @@ const GamePage = () => {
 
         init();
     }, []);
-
+    // setLoading(prev=>prev=true)
     return loading ? (
-        <>Loading</>
+        <Loading />
     ) : (
-        <>
-            {/* Video and overlay canvas (top right) */}
+        <div
+            style={{
+                minHeight: '100vh',
+                background: 'linear-gradient(135deg, #f8fafc 0%, #c7d2fe 100%)',
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
+                fontFamily: 'Segoe UI, sans-serif',
+            }}
+        >
             <div
                 style={{
-                    position: 'fixed',
-                    top: '10px',
-                    right: '10px',
-                    width: '320px',
-                    height: 'auto',
+                    background: '#fff',
+                    borderRadius: '24px',
+                    boxShadow: '0 8px 32px rgba(60,60,120,0.15)',
+                    padding: '32px 40px',
                     display: 'flex',
                     flexDirection: 'column',
                     alignItems: 'center',
+                    gap: '24px',
+                    minWidth: '400px',
                 }}
             >
+                {/* Timer and Score */}
                 <div
                     style={{
-                        position: 'relative',
-                        width: '320px',
-                        height: '240px',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'space-between',
+                        width: '100%',
+                        marginBottom: '12px',
                     }}
                 >
-                    {/* Hidden video element for webcam */}
-                    <video
-                        ref={videoRef}
-                        autoPlay
-                        playsInline
-                        muted
-                        width={1920}
-                        height={1080}
-                        style={{
-                            position: 'absolute',
-                            top: 0,
-                            left: 0,
-                            width: '320px',
-                            height: '240px',
-                            opacity: 0,
-                            zIndex: 1,
-                        }}
-                    />
-                    {/* Canvas for drawing video and keypoints */}
-                    <canvas
-                        ref={canvasRef}
-                        width={1920}
-                        height={1080}
-                        style={{
-                            position: 'absolute',
-                            top: 0,
-                            left: 0,
-                            width: '320px',
-                            height: '240px',
-                            border: '1px solid black',
-                            zIndex: 2,
-                        }}
-                    />
+                    <div style={{
+                        fontSize: '1.2rem',
+                        fontWeight: 500,
+                        color: '#6366f1',
+                        background: '#eef2ff',
+                        borderRadius: '12px',
+                        padding: '8px 18px',
+                        boxShadow: '0 2px 8px #6366f11a',
+                    }}>
+                        <Timer initialSeconds={10} onComplete={handleOnComplete} />
+                    </div>
+                    <div style={{
+                        fontSize: '1.2rem',
+                        fontWeight: 600,
+                        color: '#fff',
+                        background: 'linear-gradient(90deg, #f43f5e 0%, #6366f1 100%)',
+                        borderRadius: '12px',
+                        padding: '8px 24px',
+                        marginLeft: '16px',
+                        boxShadow: '0 2px 8px #6366f11a',
+                        letterSpacing: '1px',
+                    }}>
+                        🦟 Score: {scoreRef.current.score}
+                    </div>
                 </div>
 
-                {/* Countdown timer */}
-                <Timer initialSeconds={10} onComplete={handleOnComplete} />
-            </div>
+                {/* Game Canvas */}
+                <div style={{
+                    position: 'relative',
+                    width: '640px',
+                    height: '480px',
+                    borderRadius: '18px',
+                    overflow: 'hidden',
+                    boxShadow: '0 4px 24px #6366f11a',
+                    background: '#f1f5f9',
+                    marginBottom: '8px',
+                }}>
+                    <canvas
+                        ref={gameRef}
+                        width={640}
+                        height={480}
+                        style={{
+                            width: '640px',
+                            height: '480px',
+                            border: '2px solid #6366f1',
+                            borderRadius: '18px',
+                            background: '#fff',
+                            display: 'block',
+                        }}
+                    />
+                    <img ref={HandRef} style={{
+                        position: 'absolute',
+                        left: 0,
+                        top: 0,
+                        pointerEvents: 'none',
+                        zIndex: 3,
+                        display: 'none',
+                    }} />
+                    <img
+                        ref={mosquitoRef}
+                        src={mosquitoImage}
+                        height={50}
+                        width={50}
+                        style={{ visibility: 'hidden', position: 'absolute' }}
+                    />
+                    <img src={RoomImage} ref={roomRef} alt="" style={{ display: 'none' }} />
+                    <img src={Dot} ref={DotRef} alt="" style={{ visibility: 'hidden' }} />
+                </div>
 
-            {/* Main game canvas and hidden assets */}
-            <div>
-                {/* Hidden room background image */}
-                <img src={RoomImage} ref={roomRef} alt="" style={{ display: 'none' }} />
-                {/* Game canvas where hand image is drawn */}
-                <canvas
-                    ref={gameRef}
-                    width={640}
-                    height={480}
-                    style={{ border: '2px solid black' }}
-                />
-                {/* Hand image element (used for drawing on canvas) */}
-                <img ref={HandRef} />
-                <img
-                    ref={mosquitoRef}
-                    src={mosquitoImage}
-                    height={50}
-                    width={50}
-                    style={{ visibility: 'hidden' }}
-                />
+                {/* Video Preview */}
+                <button onClick={()=>{
+                    navigate('/test')
+                }}>
+                    <div
+                        style={{
+                            position: 'fixed',
+                            top: '32px',
+                            right: '32px',
+                            width: '320px',
+                            height: '240px',
+                            borderRadius: '12px',
+                            overflow: 'hidden',
+                            boxShadow: '0 2px 12px #6366f11a',
+                            background: '#fff',
+                            zIndex: 1000,
+                        }}
+                    >
+                        <video
+                            ref={videoRef}
+                            autoPlay
+                            playsInline
+                            muted
+                            width={1920}
+                            height={1080}
+                            style={{
+                                position: 'absolute',
+                                top: 0,
+                                left: 0,
+                                width: '320px',
+                                height: '240px',
+                                opacity: 0,
+                                zIndex: 1,
+                            }}
+                        />
+                        <canvas
+                            ref={canvasRef}
+                            width={1920}
+                            height={1080}
+                            style={{
+                                position: 'absolute',
+                                top: 0,
+                                left: 0,
+                                width: '320px',
+                                height: '240px',
+                                border: '1px solid #6366f1',
+                                borderRadius: '12px',
+                                zIndex: 2,
+                                background: '#f1f5f9',
+                            }}
+                        />
+                    </div>
+                </button>
             </div>
-            <img src={Dot} ref={DotRef} alt="" style={{ visibility: 'hidden' }} />
-        </>
+        </div>
     );
 };
 
