@@ -1,7 +1,6 @@
 import React, { useRef, useEffect } from 'react';
 import { gsap } from 'gsap';
 import MusquitoImage from '/ChatGPT Image May 11, 2025, 09_14_53 AM.png';
-// import BackgroundImage from '/Gemini_Generated_Image_fpo4mufpo4mufpo4.jpg';
 import Logo from '/mosquito_game_transparent (1).png';
 import BgMusic from '/jazzyfrenchy.mp3';
 import { useNavigate } from 'react-router-dom';

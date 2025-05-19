@@ -33,7 +33,6 @@ const GamePage = () => {
     const gameRef = useRef(null);
     const roomRef = useRef(null);
     const mosquitoRef = useRef(null);
-    // const DotRef = useRef(null);
     const handPositionRef = useRef({ x: 0, y: 0 });
     const prevHandStateRef = useRef('Open');
     const scoreRef = useRef({ score: 0 });
@@ -68,7 +67,6 @@ const GamePage = () => {
             }
         }
         window.addEventListener('keydown', handleKeyDown);
-        // console.log(prevLengthOfMosquitoArrayRef.current);
         return () => window.removeEventListener('keydown', handleKeyDown);
     }, [])
 
@@ -81,7 +79,6 @@ const GamePage = () => {
     };
 
     useEffect(() => {
-        console.log(mosquitoes)
         const newMosquitoes = mosquitoes.length - prevLengthOfMosquitoArrayRef.current;
 
         if (newMosquitoes === 0) {
@@ -90,7 +87,6 @@ const GamePage = () => {
         else if (newMosquitoes > 0) {
             for (let i = 0; i < newMosquitoes; i++) {
                 const newAudio = new Audio(mosquitoAudio);
-                console.log(newAudio)
                 newAudio.play();
                 mosquitoAudioInstancesRef.current.push(newAudio);
             }
@@ -180,12 +176,12 @@ const GamePage = () => {
                     );
                     ctx.lineWidth = '6';
                     ctx.strokeStyle = 'red';
-                    ctx.rect(
-                        (canvasRef.current.width - gameRef.current.width) / 2,
-                        (canvasRef.current.height - gameRef.current.height) / 2,
-                        gameRef.current.width,
-                        gameRef.current.height
-                    );
+                    // ctx.rect(
+                    //     (canvasRef.current.width - gameRef.current.width) / 2,
+                    //     (canvasRef.current.height - gameRef.current.height) / 2,
+                    //     gameRef.current.width,
+                    //     gameRef.current.height
+                    // );
                     ctx.stroke();
                     gameCtx.drawImage(
                         roomRef.current,
@@ -251,8 +247,6 @@ const GamePage = () => {
                     } else {
                         HandRef.current.style.visibility = 'hidden';
                     }
-
-                    // console.log(predictions[0])
                     let currentHandState;
                     let justClosed;
 
@@ -261,8 +255,6 @@ const GamePage = () => {
                         justClosed = prevHandStateRef.current === 'Open' && currentHandState === 'Closed';
                         prevHandStateRef.current = currentHandState;
                     }
-
-                    // console.log(HandRef.current.width, HandRef.current.height)
                     setMosquitoes((mosquitoArray) => {
                         const movedMosquitoes = mosquitoArray
                             .map((mosquito) => {
