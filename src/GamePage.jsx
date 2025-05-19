@@ -22,7 +22,6 @@ import { getHandedness, getHandState } from './components/handFunctions.js';
 import RoomImage from '/ChatGPT Image May 16, 2025, 11_15_35 AM.png';
 import mosquitoImage from '/ChatGPT Image May 11, 2025, 09_14_53 AM.png';
 import mosquitoAudio from '/662970__ianfsa__mosquito-1-edit.wav'
-import Dot from '/red_dot_5x5.png';
 import Loading from './components/Loading.jsx';
 import Timer from './components/Timer.jsx';
 
@@ -34,7 +33,7 @@ const GamePage = () => {
     const gameRef = useRef(null);
     const roomRef = useRef(null);
     const mosquitoRef = useRef(null);
-    const DotRef = useRef(null);
+    // const DotRef = useRef(null);
     const handPositionRef = useRef({ x: 0, y: 0 });
     const prevHandStateRef = useRef('Open');
     const scoreRef = useRef({ score: 0 });
@@ -435,7 +434,7 @@ const GamePage = () => {
                         style={{ visibility: 'hidden', position: 'absolute' }}
                     />
                     <img src={RoomImage} ref={roomRef} alt="" style={{ display: 'none' }} />
-                    <img src={Dot} ref={DotRef} alt="" style={{ display: 'none' }} />
+                    {/* <img src={Dot} ref={DotRef} alt="" style={{ display: 'none' }} /> */}
 
                 </div>
 
