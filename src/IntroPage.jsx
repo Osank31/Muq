@@ -9,11 +9,15 @@ import { useNavigate } from 'react-router-dom';
 function IntroPage() {
     const boxRef = useRef(null);
     const navigate=useNavigate();
+    const audioRef=useRef(null);
 
     useEffect(() => {
         const getCameraPermission = async () => {
             try {
                 await navigator.mediaDevices.getUserMedia({ video: true });
+                if(audioRef.current){
+                    audioRef.current.play();
+                }
             } catch (error) {
                 console.error('Camera permission denied', error);
                 navigate('/cam-denied')
@@ -57,7 +61,7 @@ function IntroPage() {
             className="min-h-screen w-full bg-gradient-to-br from-slate-50 to-indigo-200 grid place-items-center"
         >
             {/* Background music */}
-            <audio src={BgMusic} autoPlay loop controls={false} hidden />
+            <audio src={BgMusic} autoPlay loop controls={false} hidden ref={audioRef}/>
             <div className="relative flex flex-col items-center justify-center" style={{ width: 500, height: 500 }}>
                 <img src={Logo} style={{ height: '350px', zIndex: 1 }} alt="Logo" />
                 <img

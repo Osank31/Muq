@@ -375,7 +375,7 @@ const GamePage = () => {
                         padding: '8px 18px',
                         boxShadow: '0 2px 8px #6366f11a',
                     }}>
-                        <Timer initialSeconds={120} onComplete={() => {
+                        <Timer initialSeconds={60} onComplete={() => {
                             stopAllMosquitoAudio();
                             handleOnComplete(navigate, scoreRef.current.score)
                         }} />
