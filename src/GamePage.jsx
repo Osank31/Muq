@@ -45,30 +45,30 @@ const GamePage = () => {
     const mosquitoAudioInstancesRef = useRef([]);
     const prevLengthOfMosquitoArrayRef = useRef(0);
 
-    useEffect(() => {
-        const handleKeyDown = (e) => {
-            if (e.key === 'm') {
-                let [intialX, initialY, n] = getRandomInitial(gameRef.current.width, gameRef.current.height, 400, 400 / 1.5);
-                let [targetX, targetY, n2] = getRandomFinal(gameRef.current.width, gameRef.current.height, 400, 400 / 1.5, n);
-                const theta = calculateAngle(intialX, initialY, targetX, targetY);
-                const newMosquito = {
-                    id: Date.now(),
-                    x: intialX,
-                    y: initialY,
-                    targetX,
-                    targetY,
-                    speed: getRandom(5, 15),
-                    intialX,
-                    initialY,
-                    theta
-                };
+    // useEffect(() => {
+    //     const handleKeyDown = (e) => {
+    //         if (e.key === 'm') {
+    //             let [intialX, initialY, n] = getRandomInitial(gameRef.current.width, gameRef.current.height, 400, 400 / 1.5);
+    //             let [targetX, targetY, n2] = getRandomFinal(gameRef.current.width, gameRef.current.height, 400, 400 / 1.5, n);
+    //             const theta = calculateAngle(intialX, initialY, targetX, targetY);
+    //             const newMosquito = {
+    //                 id: Date.now(),
+    //                 x: intialX,
+    //                 y: initialY,
+    //                 targetX,
+    //                 targetY,
+    //                 speed: getRandom(15, 25),
+    //                 intialX,
+    //                 initialY,
+    //                 theta
+    //             };
 
-                setMosquitoes((prev) => [...prev, newMosquito]);
-            }
-        }
-        window.addEventListener('keydown', handleKeyDown);
-        return () => window.removeEventListener('keydown', handleKeyDown);
-    }, [])
+    //             setMosquitoes((prev) => [...prev, newMosquito]);
+    //         }
+    //     }
+    //     window.addEventListener('keydown', handleKeyDown);
+    //     return () => window.removeEventListener('keydown', handleKeyDown);
+    // }, [])
 
     const stopAllMosquitoAudio = () => {
         mosquitoAudioInstancesRef.current.forEach(audio => {
@@ -115,7 +115,7 @@ const GamePage = () => {
                 y: initialY,
                 targetX: targetX,
                 targetY: targetY,
-                speed: getRandom(5, 10),
+                speed: getRandom(15, 25),
                 intialX: intialX,
                 initialY: initialY,
                 theta,
