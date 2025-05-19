@@ -3,6 +3,7 @@ import { gsap } from 'gsap';
 import MusquitoImage from '/ChatGPT Image May 11, 2025, 09_14_53 AM.png';
 import BackgroundImage from '/Gemini_Generated_Image_fpo4mufpo4mufpo4.jpg';
 import Logo from '/mosquito_game_transparent (1).png';
+import BgMusic from '/jazzyfrenchy.mp3';
 import { useNavigate } from 'react-router-dom';
 
 function IntroPage() {
@@ -55,6 +56,8 @@ function IntroPage() {
         <div
             className="min-h-screen w-full bg-gradient-to-br from-slate-50 to-indigo-200 grid place-items-center"
         >
+            {/* Background music */}
+            <audio src={BgMusic} autoPlay loop controls={false} hidden />
             <div className="relative flex flex-col items-center justify-center" style={{ width: 500, height: 500 }}>
                 <img src={Logo} style={{ height: '350px', zIndex: 1 }} alt="Logo" />
                 <img

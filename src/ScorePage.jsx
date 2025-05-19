@@ -1,4 +1,5 @@
 import { useLocation, useNavigate } from "react-router-dom";
+import BgMusic from '/jazzyfrenchy.mp3';
 
 const ScorePage = () => {
     const location = useLocation();
@@ -78,6 +79,7 @@ const ScorePage = () => {
                 >
                     Play Again
                 </button>
+                <audio src={BgMusic} autoPlay loop controls={false} hidden />
             </div>
             <style>{`
                 @keyframes pop {

@@ -110,24 +110,24 @@ const GamePage = () => {
 
     useEffect(() => {
         //spawn mosquito randomly
-        // callFunctionRandomly(() => {
-        //     let [intialX, initialY, n] = getRandomInitial(640, 480, 400, 400 / 1.5);
-        //     let [targetX, targetY] = getRandomFinal(640, 480, 400, 400 / 1.5, n);
-        //     const theta = calculateAngle(intialX, initialY, targetX, targetY);
-        //     const newMosquito = {
-        //         id: Date.now(),
-        //         x: intialX,
-        //         y: initialY,
-        //         targetX: targetX,
-        //         targetY: targetY,
-        //         speed: getRandom(5, 10),
-        //         intialX: intialX,
-        //         initialY: initialY,
-        //         theta,
-        //     };
+        callFunctionRandomly(() => {
+            let [intialX, initialY, n] = getRandomInitial(640, 480, 400, 400 / 1.5);
+            let [targetX, targetY] = getRandomFinal(640, 480, 400, 400 / 1.5, n);
+            const theta = calculateAngle(intialX, initialY, targetX, targetY);
+            const newMosquito = {
+                id: Date.now(),
+                x: intialX,
+                y: initialY,
+                targetX: targetX,
+                targetY: targetY,
+                speed: getRandom(5, 10),
+                intialX: intialX,
+                initialY: initialY,
+                theta,
+            };
 
-        //     setMosquitoes((prev) => [...prev, newMosquito]);
-        // });
+            setMosquitoes((prev) => [...prev, newMosquito]);
+        });
 
         const loadModelAndDetect = async () => {
             await tf.setBackend('webgl');
@@ -375,7 +375,7 @@ const GamePage = () => {
                         padding: '8px 18px',
                         boxShadow: '0 2px 8px #6366f11a',
                     }}>
-                        <Timer initialSeconds={10} onComplete={() => {
+                        <Timer initialSeconds={120} onComplete={() => {
                             stopAllMosquitoAudio();
                             handleOnComplete(navigate, scoreRef.current.score)
                         }} />
