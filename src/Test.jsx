@@ -170,12 +170,12 @@ const Test = () => {
                     );
                     ctx.lineWidth = '6';
                     ctx.strokeStyle = 'red';
-                    ctx.rect(
-                        (canvasRef.current.width - gameRef.current.width) / 2,
-                        (canvasRef.current.height - gameRef.current.height) / 2,
-                        gameRef.current.width,
-                        gameRef.current.height
-                    );
+                    // ctx.rect(
+                    //     (canvasRef.current.width - gameRef.current.width) / 2,
+                    //     (canvasRef.current.height - gameRef.current.height) / 2,
+                    //     gameRef.current.width,
+                    //     gameRef.current.height
+                    // );
                     ctx.stroke();
                     gameCtx.drawImage(
                         roomRef.current,
