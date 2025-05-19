@@ -392,7 +392,6 @@ const Test = () => {
                         style={{ visibility: 'hidden', position: 'absolute' }}
                     />
                     <img src={RoomImage} ref={roomRef} alt="" style={{ display: 'none' }} />
-                    <img src={Dot} ref={DotRef} alt="" style={{ visibility: 'hidden' }} />
                 </div>
 
                 {/* Video Preview */}
