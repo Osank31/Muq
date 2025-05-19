@@ -116,8 +116,8 @@ const GamePage = () => {
                 targetX: targetX,
                 targetY: targetY,
                 speed: getRandom(15, 25),
-                intialX: intialX,
-                initialY: initialY,
+                intialX,
+                initialY,
                 theta,
             };
 
@@ -206,13 +206,13 @@ const GamePage = () => {
                                 HandRef.current.src = ClosedHandImage;
                         }
 
-                        predictions[0].keypoints.forEach((coordinates) => {
-                            const [x, y] = [coordinates.x, coordinates.y];
-                            ctx.beginPath();
-                            ctx.arc(x, y, 10, 0, 2 * Math.PI);
-                            ctx.fillStyle = 'red';
-                            ctx.fill();
-                        });
+                        // predictions[0].keypoints.forEach((coordinates) => {
+                        //     const [x, y] = [coordinates.x, coordinates.y];
+                        //     ctx.beginPath();
+                        //     ctx.arc(x, y, 10, 0, 2 * Math.PI);
+                        //     ctx.fillStyle = 'red';
+                        //     ctx.fill();
+                        // });
 
                         let [incenter_x, incenter_y] = getIncenter(
                             [predictions[0].keypoints[0].x, predictions[0].keypoints[0].y],
