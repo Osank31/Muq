@@ -1,5 +1,5 @@
-const handleOnComplete = () => {
-    // Timer complete handler
+const handleOnComplete = (navigate, score) => {
+    navigate('/score', { state: { score } });
 };
 
 const getRandom = (a, b) => {

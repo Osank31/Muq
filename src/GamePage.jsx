@@ -47,33 +47,42 @@ const GamePage = () => {
     const mosquitoAudioInstancesRef = useRef([]);
     const prevLengthOfMosquitoArrayRef = useRef(0);
 
-    // useEffect(() => {
-    //     const handleKeyDown = (e) => {
-    //         if (e.key === 'm') {
-    //             let [intialX, initialY, n] = getRandomInitial(gameRef.current.width, gameRef.current.height, 400, 400 / 1.5);
-    //             let [targetX, targetY, n2] = getRandomFinal(gameRef.current.width, gameRef.current.height, 400, 400 / 1.5, n);
-    //             const theta = calculateAngle(intialX, initialY, targetX, targetY);
-    //             const newMosquito = {
-    //                 id: Date.now(),
-    //                 x: intialX,
-    //                 y: initialY,
-    //                 targetX,
-    //                 targetY,
-    //                 speed: getRandom(5, 15),
-    //                 intialX,
-    //                 initialY,
-    //                 theta
-    //             };
+    useEffect(() => {
+        const handleKeyDown = (e) => {
+            if (e.key === 'm') {
+                let [intialX, initialY, n] = getRandomInitial(gameRef.current.width, gameRef.current.height, 400, 400 / 1.5);
+                let [targetX, targetY, n2] = getRandomFinal(gameRef.current.width, gameRef.current.height, 400, 400 / 1.5, n);
+                const theta = calculateAngle(intialX, initialY, targetX, targetY);
+                const newMosquito = {
+                    id: Date.now(),
+                    x: intialX,
+                    y: initialY,
+                    targetX,
+                    targetY,
+                    speed: getRandom(5, 15),
+                    intialX,
+                    initialY,
+                    theta
+                };
 
-    //             setMosquitoes((prev) => [...prev, newMosquito]);
-    //         }
-    //     }
-    //     window.addEventListener('keydown', handleKeyDown);
-    //     // console.log(prevLengthOfMosquitoArrayRef.current);
-    //     return () => window.removeEventListener('keydown', handleKeyDown);
-    // }, [])
+                setMosquitoes((prev) => [...prev, newMosquito]);
+            }
+        }
+        window.addEventListener('keydown', handleKeyDown);
+        // console.log(prevLengthOfMosquitoArrayRef.current);
+        return () => window.removeEventListener('keydown', handleKeyDown);
+    }, [])
+
+    const stopAllMosquitoAudio = () => {
+        mosquitoAudioInstancesRef.current.forEach(audio => {
+            audio.pause();
+            audio.currentTime = 0;
+        });
+        mosquitoAudioInstancesRef.current = [];
+    };
 
     useEffect(() => {
+        console.log(mosquitoes)
         const newMosquitoes = mosquitoes.length - prevLengthOfMosquitoArrayRef.current;
 
         if (newMosquitoes === 0) {
@@ -100,6 +109,7 @@ const GamePage = () => {
     }, [mosquitoes])
 
     useEffect(() => {
+        //spawn mosquito randomly
         // callFunctionRandomly(() => {
         //     let [intialX, initialY, n] = getRandomInitial(640, 480, 400, 400 / 1.5);
         //     let [targetX, targetY] = getRandomFinal(640, 480, 400, 400 / 1.5, n);
@@ -154,7 +164,7 @@ const GamePage = () => {
             const gameCtx = gameRef.current.getContext('2d');
 
             const detect = async () => {
-                if (modelRef.current && videoRef.current && videoRef.current.readyState === 4) {
+                if (modelRef.current && canvasRef.current && videoRef.current && videoRef.current.readyState === 4) {
                     const predictions = await modelRef.current.estimateHands(videoRef.current);
                     ctx.clearRect(0, 0, canvasRef.current.width, canvasRef.current.height);
                     gameCtx.clearRect(0, 0, gameRef.current.width, gameRef.current.height);
@@ -365,7 +375,10 @@ const GamePage = () => {
                         padding: '8px 18px',
                         boxShadow: '0 2px 8px #6366f11a',
                     }}>
-                        <Timer initialSeconds={10} onComplete={handleOnComplete} />
+                        <Timer initialSeconds={10} onComplete={() => {
+                            stopAllMosquitoAudio();
+                            handleOnComplete(navigate, scoreRef.current.score)
+                        }} />
                     </div>
                     <div style={{
                         fontSize: '1.2rem',
@@ -422,7 +435,8 @@ const GamePage = () => {
                         style={{ visibility: 'hidden', position: 'absolute' }}
                     />
                     <img src={RoomImage} ref={roomRef} alt="" style={{ display: 'none' }} />
-                    <img src={Dot} ref={DotRef} alt="" style={{ visibility: 'hidden' }} />
+                    <img src={Dot} ref={DotRef} alt="" style={{ display: 'none' }} />
+
                 </div>
 
                 {/* Video Preview */}

@@ -71,15 +71,39 @@ function IntroPage() {
                     }}
                     alt="Mosquito"
                 />
-                <button
-                    className="mt-12 px-8 py-3 rounded-sm bg-indigo-500 hover:bg-indigo-600 active:bg-indigo-700 text-white text-lg font-semibold shadow-lg transition-all duration-200 ease-in-out ring-2 ring-indigo-300 hover:ring-indigo-400 focus:outline-none focus:ring-4 focus:ring-indigo-400"
-                    style={{ zIndex: 10 }}
-                    onClick={() => {
-                        navigate('/game');
-                    }}
+                {/* Game Rules Section */}
+                <div
+                    className="bg-white bg-opacity-80 rounded-lg shadow-md p-6 mb-8 mt-4 w-full max-w-md text-gray-800"
+                    style={{ zIndex: 5 }}
                 >
-                    Start Game
-                </button>
+                    <h2 className="text-xl font-bold mb-2">Game Rules</h2>
+                    <ul className="list-disc list-inside text-base space-y-1">
+                        <li>Raise your hand and close your fist to kill the mosquitoes</li>
+                        <li>Allow camera permission for better experience</li>
+                        <li>Make sure to have proper lighting so that our model can detect your hands clearly.</li>
+                        <li>Test your environment to make sure it works</li>
+                    </ul>
+                </div>
+                {/* End Game Rules Section */}
+                <div style={{ height: '32px' }} /> {/* Add a gap of 32px */}
+                <div className="flex flex-row gap-4" style={{ zIndex: 10 }}>
+                    <button
+                        className="px-10 py-3 rounded-lg bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 hover:from-indigo-600 hover:via-purple-600 hover:to-pink-600 active:from-indigo-700 active:via-purple-700 active:to-pink-700 text-white text-lg font-bold shadow-xl transition-all duration-200 ease-in-out ring-4 ring-indigo-200 hover:ring-pink-300 focus:outline-none focus:ring-4 focus:ring-pink-400 transform hover:scale-105"
+                        onClick={() => {
+                            navigate('/game');
+                        }}
+                    >
+                        <span className="drop-shadow-lg tracking-wide">🎮 Start Game</span>
+                    </button>
+                    <button
+                        className="px-10 py-3 rounded-lg bg-gradient-to-r from-gray-400 via-blue-400 to-green-400 hover:from-gray-500 hover:via-blue-500 hover:to-green-500 active:from-gray-600 active:via-blue-600 active:to-green-600 text-white text-lg font-bold shadow-xl transition-all duration-200 ease-in-out ring-4 ring-blue-200 hover:ring-green-300 focus:outline-none focus:ring-4 focus:ring-green-400 transform hover:scale-105"
+                        onClick={() => {
+                            navigate('/test');
+                        }}
+                    >
+                        <span className="drop-shadow-lg tracking-wide">🧪 Test Environment</span>
+                    </button>
+                </div>
             </div>
         </div>
     );

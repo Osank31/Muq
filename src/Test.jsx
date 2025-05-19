@@ -1,17 +1,10 @@
 import React, { useRef, useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import * as tf from '@tensorflow/tfjs-core';
 import '@tensorflow/tfjs-converter';
 import '@tensorflow/tfjs-backend-webgl';
 import * as handpose from '@tensorflow-models/handpose';
 import * as handPoseDetection from '@tensorflow-models/hand-pose-detection';
-import OpenHandImage from '/open_hand-removebg-preview.png';
-import ClosedHandImage from '/close_hand-removebg-preview.png';
-import { getHandedness, getHandState } from './components/handFunctions.js';
-import RoomImage from '/ChatGPT Image May 16, 2025, 11_15_35 AM.png';
-import mosquitoImage from '/ChatGPT Image May 11, 2025, 09_14_53 AM.png';
-import Timer from './components/Timer.jsx';
-import Dot from '/red_dot_5x5.png';
-import Loading from './components/Loading.jsx';
 import {
     handleOnComplete,
     getRandom,
@@ -23,9 +16,17 @@ import {
     getIncenter,
     callFunctionRandomly
 } from './components/gameUtils.js';
-import { useNavigate } from 'react-router-dom';
+import OpenHandImage from '/open_hand-removebg-preview.png';
+import ClosedHandImage from '/close_hand-removebg-preview.png';
+import { getHandedness, getHandState } from './components/handFunctions.js';
+import RoomImage from '/ChatGPT Image May 16, 2025, 11_15_35 AM.png';
+import mosquitoImage from '/ChatGPT Image May 11, 2025, 09_14_53 AM.png';
+import mosquitoAudio from '/662970__ianfsa__mosquito-1-edit.wav'
+import Dot from '/red_dot_5x5.png';
+import Loading from './components/Loading.jsx';
+import Timer from './components/Timer.jsx';
 
-const GamePage = () => {
+const Test = () => {
     const videoRef = useRef(null);
     const canvasRef = useRef(null);
     const modelRef = useRef(null);
@@ -43,8 +44,80 @@ const GamePage = () => {
     const [loading, setLoading] = useState(true);
     const [mosquitoes, setMosquitoes] = useState([]);
 
-    useEffect(() => {
+    const mosquitoAudioInstancesRef = useRef([]);
+    const prevLengthOfMosquitoArrayRef = useRef(0);
 
+    useEffect(() => {
+        const handleKeyDown = (e) => {
+            if (e.key === 'm') {
+                let [intialX, initialY, n] = getRandomInitial(gameRef.current.width, gameRef.current.height, 400, 400 / 1.5);
+                let [targetX, targetY, n2] = getRandomFinal(gameRef.current.width, gameRef.current.height, 400, 400 / 1.5, n);
+                const theta = calculateAngle(intialX, initialY, targetX, targetY);
+                const newMosquito = {
+                    id: Date.now(),
+                    x: intialX,
+                    y: initialY,
+                    targetX,
+                    targetY,
+                    speed: getRandom(5, 15),
+                    intialX,
+                    initialY,
+                    theta
+                };
+
+                setMosquitoes((prev) => [...prev, newMosquito]);
+            }
+        }
+        window.addEventListener('keydown', handleKeyDown);
+        // console.log(prevLengthOfMosquitoArrayRef.current);
+        return () => window.removeEventListener('keydown', handleKeyDown);
+    }, [])
+
+    useEffect(() => {
+        const newMosquitoes = mosquitoes.length - prevLengthOfMosquitoArrayRef.current;
+
+        if (newMosquitoes === 0) {
+            return;
+        }
+        else if (newMosquitoes > 0) {
+            for (let i = 0; i < newMosquitoes; i++) {
+                const newAudio = new Audio(mosquitoAudio);
+                console.log(newAudio)
+                newAudio.play();
+                mosquitoAudioInstancesRef.current.push(newAudio);
+            }
+        }
+        else if (newMosquitoes < 0) {
+            for (let i = 0; i < Math.abs(newMosquitoes); i++) {
+                const audioToStop = mosquitoAudioInstancesRef.current.pop();
+                if (audioToStop) {
+                    audioToStop.pause();
+                    audioToStop.currentTime = 0;
+                }
+            }
+        }
+        prevLengthOfMosquitoArrayRef.current = mosquitoes.length;
+    }, [mosquitoes])
+
+    useEffect(() => {
+        // callFunctionRandomly(() => {
+        //     let [intialX, initialY, n] = getRandomInitial(640, 480, 400, 400 / 1.5);
+        //     let [targetX, targetY] = getRandomFinal(640, 480, 400, 400 / 1.5, n);
+        //     const theta = calculateAngle(intialX, initialY, targetX, targetY);
+        //     const newMosquito = {
+        //         id: Date.now(),
+        //         x: intialX,
+        //         y: initialY,
+        //         targetX: targetX,
+        //         targetY: targetY,
+        //         speed: getRandom(5, 10),
+        //         intialX: intialX,
+        //         initialY: initialY,
+        //         theta,
+        //     };
+
+        //     setMosquitoes((prev) => [...prev, newMosquito]);
+        // });
 
         const loadModelAndDetect = async () => {
             await tf.setBackend('webgl');
@@ -158,7 +231,7 @@ const GamePage = () => {
                             let size = 125;
                             gameCtx.drawImage(
                                 HandRef.current,
-                                (x),
+                                x,
                                 y,
                                 size,
                                 size / (HandRef.current.width / HandRef.current.height)
@@ -245,7 +318,6 @@ const GamePage = () => {
 
         init();
     }, []);
-    // setLoading(prev=>prev=true)
     return loading ? (
         <Loading />
     ) : (
@@ -273,7 +345,14 @@ const GamePage = () => {
                     minWidth: '400px',
                 }}
             >
-
+                <p style={{
+                    fontWeight: 600,
+                    color: '#6366f1',
+                    fontSize: '1.2rem',
+                    marginBottom: '-8px'
+                }}>
+                    Press <span style={{background:'#f1f5f9',padding:'2px 8px',borderRadius:'6px',border:'1px solid #c7d2fe'}}>M</span> to spawn a mosquito
+                </p>
                 {/* Game Canvas */}
                 <div style={{
                     position: 'relative',
@@ -415,4 +494,4 @@ const GamePage = () => {
     );
 };
 
-export default GamePage;
+export default Test;
