@@ -7,19 +7,19 @@ import { useNavigate } from 'react-router-dom';
 
 function IntroPage() {
     const boxRef = useRef(null);
-    const navigate=useNavigate();
-    const audioRef=useRef(null);
+    const navigate = useNavigate();
+    const audioRef = useRef(null);
 
     useEffect(() => {
         const getCameraPermission = async () => {
             try {
                 await navigator.mediaDevices.getUserMedia({ video: true });
-                if(audioRef.current){
+                if (audioRef.current) {
                     audioRef.current.play();
                 }
             } catch (error) {
                 console.error('Camera permission denied', error);
-                navigate('/cam-denied')
+                navigate('/cam-denied');
             }
         };
         getCameraPermission();
@@ -31,7 +31,7 @@ function IntroPage() {
         let frameId;
 
         const animate = () => {
-            angle += (360 / (60 * duration));
+            angle += 360 / (60 * duration);
             if (angle >= 360) angle -= 360;
 
             if (boxRef.current) {
@@ -42,7 +42,7 @@ function IntroPage() {
                     left: `calc(50% + ${x}px)`,
                     top: `calc(50% + ${y}px)`,
                     rotation: 0,
-                    transform: 'translate(-50%, -50%)'
+                    transform: 'translate(-50%, -50%)',
                 });
             }
 
@@ -56,12 +56,13 @@ function IntroPage() {
     }, []);
 
     return (
-        <div
-            className="min-h-screen w-full bg-gradient-to-br from-slate-50 to-indigo-200 grid place-items-center"
-        >
+        <div className="min-h-screen w-full bg-gradient-to-br from-slate-50 to-indigo-200 grid place-items-center">
             {/* Background music */}
-            <audio src={BgMusic} autoPlay loop controls={false} hidden ref={audioRef}/>
-            <div className="relative flex flex-col items-center justify-center" style={{ width: 500, height: 500 }}>
+            <audio src={BgMusic} autoPlay loop controls={false} hidden ref={audioRef} />
+            <div
+                className="relative flex flex-col items-center justify-center"
+                style={{ width: 500, height: 500 }}
+            >
                 <img src={Logo} style={{ height: '350px', zIndex: 1 }} alt="Logo" />
                 <img
                     src={MusquitoImage}
@@ -86,7 +87,10 @@ function IntroPage() {
                     <ul className="list-disc list-inside text-base space-y-1">
                         <li>Raise your hand and close your fist to kill the mosquitoes</li>
                         <li>Allow camera permission for better experience</li>
-                        <li>Make sure to have proper lighting so that our model can detect your hands clearly.</li>
+                        <li>
+                            Make sure to have proper lighting so that our model can detect your
+                            hands clearly.
+                        </li>
                         <li>Test your environment to make sure it works</li>
                     </ul>
                 </div>

@@ -14,14 +14,14 @@ import {
     calculateAngle,
     camHandCoordinatesToGameHandCoordinates,
     getIncenter,
-    callFunctionRandomly
+    callFunctionRandomly,
 } from './components/gameUtils.js';
 import OpenHandImage from '/open_hand-removebg-preview.png';
 import ClosedHandImage from '/close_hand-removebg-preview.png';
 import { getHandedness, getHandState } from './components/handFunctions.js';
 import RoomImage from '/ChatGPT Image May 16, 2025, 11_15_35 AM.png';
 import mosquitoImage from '/ChatGPT Image May 11, 2025, 09_14_53 AM.png';
-import mosquitoAudio from '/662970__ianfsa__mosquito-1-edit.wav'
+import mosquitoAudio from '/662970__ianfsa__mosquito-1-edit.wav';
 import Loading from './components/Loading.jsx';
 import Timer from './components/Timer.jsx';
 
@@ -49,8 +49,19 @@ const Test = () => {
     useEffect(() => {
         const handleKeyDown = (e) => {
             if (e.key === 'm') {
-                let [intialX, initialY, n] = getRandomInitial(gameRef.current.width, gameRef.current.height, 400, 400 / 1.5);
-                let [targetX, targetY, n2] = getRandomFinal(gameRef.current.width, gameRef.current.height, 400, 400 / 1.5, n);
+                let [intialX, initialY, n] = getRandomInitial(
+                    gameRef.current.width,
+                    gameRef.current.height,
+                    400,
+                    400 / 1.5
+                );
+                let [targetX, targetY, n2] = getRandomFinal(
+                    gameRef.current.width,
+                    gameRef.current.height,
+                    400,
+                    400 / 1.5,
+                    n
+                );
                 const theta = calculateAngle(intialX, initialY, targetX, targetY);
                 const newMosquito = {
                     id: Date.now(),
@@ -61,32 +72,30 @@ const Test = () => {
                     speed: getRandom(5, 15),
                     intialX,
                     initialY,
-                    theta
+                    theta,
                 };
 
                 setMosquitoes((prev) => [...prev, newMosquito]);
             }
-        }
+        };
         window.addEventListener('keydown', handleKeyDown);
         // console.log(prevLengthOfMosquitoArrayRef.current);
         return () => window.removeEventListener('keydown', handleKeyDown);
-    }, [])
+    }, []);
 
     useEffect(() => {
         const newMosquitoes = mosquitoes.length - prevLengthOfMosquitoArrayRef.current;
 
         if (newMosquitoes === 0) {
             return;
-        }
-        else if (newMosquitoes > 0) {
+        } else if (newMosquitoes > 0) {
             for (let i = 0; i < newMosquitoes; i++) {
                 const newAudio = new Audio(mosquitoAudio);
-                console.log(newAudio)
+                console.log(newAudio);
                 newAudio.play();
                 mosquitoAudioInstancesRef.current.push(newAudio);
             }
-        }
-        else if (newMosquitoes < 0) {
+        } else if (newMosquitoes < 0) {
             for (let i = 0; i < Math.abs(newMosquitoes); i++) {
                 const audioToStop = mosquitoAudioInstancesRef.current.pop();
                 if (audioToStop) {
@@ -96,7 +105,7 @@ const Test = () => {
             }
         }
         prevLengthOfMosquitoArrayRef.current = mosquitoes.length;
-    }, [mosquitoes])
+    }, [mosquitoes]);
 
     useEffect(() => {
         // callFunctionRandomly(() => {
@@ -235,7 +244,7 @@ const Test = () => {
                                 size,
                                 size / (HandRef.current.width / HandRef.current.height)
                             );
-                        };
+                        }
 
                         handPositionRef.current = { x: x, y };
                     } else {
@@ -248,7 +257,8 @@ const Test = () => {
 
                     if (predictions.length > 0) {
                         currentHandState = predictions[0].handState;
-                        justClosed = prevHandStateRef.current === 'Open' && currentHandState === 'Closed';
+                        justClosed =
+                            prevHandStateRef.current === 'Open' && currentHandState === 'Closed';
                         prevHandStateRef.current = currentHandState;
                     }
 
@@ -344,25 +354,40 @@ const Test = () => {
                     minWidth: '400px',
                 }}
             >
-                <p style={{
-                    fontWeight: 600,
-                    color: '#6366f1',
-                    fontSize: '1.2rem',
-                    marginBottom: '-8px'
-                }}>
-                    Press <span style={{background:'#f1f5f9',padding:'2px 8px',borderRadius:'6px',border:'1px solid #c7d2fe'}}>M</span> to spawn a mosquito
+                <p
+                    style={{
+                        fontWeight: 600,
+                        color: '#6366f1',
+                        fontSize: '1.2rem',
+                        marginBottom: '-8px',
+                    }}
+                >
+                    Press{' '}
+                    <span
+                        style={{
+                            background: '#f1f5f9',
+                            padding: '2px 8px',
+                            borderRadius: '6px',
+                            border: '1px solid #c7d2fe',
+                        }}
+                    >
+                        M
+                    </span>{' '}
+                    to spawn a mosquito
                 </p>
                 {/* Game Canvas */}
-                <div style={{
-                    position: 'relative',
-                    width: '640px',
-                    height: '480px',
-                    borderRadius: '18px',
-                    overflow: 'hidden',
-                    boxShadow: '0 4px 24px #6366f11a',
-                    background: '#f1f5f9',
-                    marginBottom: '8px',
-                }}>
+                <div
+                    style={{
+                        position: 'relative',
+                        width: '640px',
+                        height: '480px',
+                        borderRadius: '18px',
+                        overflow: 'hidden',
+                        boxShadow: '0 4px 24px #6366f11a',
+                        background: '#f1f5f9',
+                        marginBottom: '8px',
+                    }}
+                >
                     <canvas
                         ref={gameRef}
                         width={640}
@@ -376,14 +401,17 @@ const Test = () => {
                             display: 'block',
                         }}
                     />
-                    <img ref={HandRef} style={{
-                        position: 'absolute',
-                        left: 0,
-                        top: 0,
-                        pointerEvents: 'none',
-                        zIndex: 3,
-                        display: 'none',
-                    }} />
+                    <img
+                        ref={HandRef}
+                        style={{
+                            position: 'absolute',
+                            left: 0,
+                            top: 0,
+                            pointerEvents: 'none',
+                            zIndex: 3,
+                            display: 'none',
+                        }}
+                    />
                     <img
                         ref={mosquitoRef}
                         src={mosquitoImage}
@@ -395,9 +423,11 @@ const Test = () => {
                 </div>
 
                 {/* Video Preview */}
-                <button onClick={() => {
-                    navigate('/test')
-                }}>
+                <button
+                    onClick={() => {
+                        navigate('/test');
+                    }}
+                >
                     <div
                         style={{
                             position: 'fixed',
@@ -466,26 +496,32 @@ const Test = () => {
                     position: 'relative',
                     overflow: 'hidden',
                 }}
-                onMouseOver={e => {
+                onMouseOver={(e) => {
                     e.currentTarget.style.transform = 'scale(1.05)';
                     e.currentTarget.style.boxShadow = '0 8px 32px #6366f133';
-                    e.currentTarget.style.background = 'linear-gradient(90deg, #f43f5e 0%, #6366f1 100%)';
+                    e.currentTarget.style.background =
+                        'linear-gradient(90deg, #f43f5e 0%, #6366f1 100%)';
                 }}
-                onMouseOut={e => {
+                onMouseOut={(e) => {
                     e.currentTarget.style.transform = 'scale(1)';
                     e.currentTarget.style.boxShadow = '0 4px 24px #6366f11a';
-                    e.currentTarget.style.background = 'linear-gradient(90deg, #6366f1 0%, #f43f5e 100%)';
+                    e.currentTarget.style.background =
+                        'linear-gradient(90deg, #6366f1 0%, #f43f5e 100%)';
                 }}
-                onClick={()=>{
+                onClick={() => {
                     navigate('/game');
                 }}
             >
-                <span style={{
-                    display: 'inline-block',
-                    verticalAlign: 'middle',
-                    marginRight: '12px',
-                    fontSize: '1.7rem',
-                }}>🎮</span>
+                <span
+                    style={{
+                        display: 'inline-block',
+                        verticalAlign: 'middle',
+                        marginRight: '12px',
+                        fontSize: '1.7rem',
+                    }}
+                >
+                    🎮
+                </span>
                 Start Game
             </button>
         </div>

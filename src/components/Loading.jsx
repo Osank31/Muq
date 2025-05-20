@@ -14,7 +14,7 @@ const Loading = () => {
         const duration = 4;
 
         const animate = () => {
-            angle += (360 / (60 * duration));
+            angle += 360 / (60 * duration);
             if (angle >= 360) angle -= 360;
 
             imgRefs.current.forEach((ref, i) => {
@@ -28,7 +28,7 @@ const Loading = () => {
                     left: `calc(50% + ${x}px)`,
                     top: `calc(50% + ${y}px)`,
                     rotation: 0,
-                    transform: 'translate(-50%, -50%)'
+                    transform: 'translate(-50%, -50%)',
                 });
             });
 
@@ -50,7 +50,14 @@ const Loading = () => {
                 fontFamily: 'Segoe UI, sans-serif',
             }}
         >
-            <div style={{ position: 'relative', width: `${radius * 2 + 100}px`, height: `${radius * 2 + 100}px`, marginBottom: 24 }}>
+            <div
+                style={{
+                    position: 'relative',
+                    width: `${radius * 2 + 100}px`,
+                    height: `${radius * 2 + 100}px`,
+                    marginBottom: 24,
+                }}
+            >
                 {imgRefs.current.map((ref, i) => (
                     <img
                         key={i}
@@ -63,7 +70,7 @@ const Loading = () => {
                             top: '0%',
                             transform: 'translate(-50%, -50%)',
                             pointerEvents: 'none',
-                            height: '150px'
+                            height: '150px',
                         }}
                     />
                 ))}

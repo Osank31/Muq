@@ -294,5 +294,5 @@ export {
     calculateAngle,
     camHandCoordinatesToGameHandCoordinates,
     getIncenter,
-    callFunctionRandomly
+    callFunctionRandomly,
 };

@@ -14,14 +14,14 @@ import {
     calculateAngle,
     camHandCoordinatesToGameHandCoordinates,
     getIncenter,
-    callFunctionRandomly
+    callFunctionRandomly,
 } from './components/gameUtils.js';
 import OpenHandImage from '/open_hand-removebg-preview.png';
 import ClosedHandImage from '/close_hand-removebg-preview.png';
 import { getHandedness, getHandState } from './components/handFunctions.js';
 import RoomImage from '/ChatGPT Image May 16, 2025, 11_15_35 AM.png';
 import mosquitoImage from '/ChatGPT Image May 11, 2025, 09_14_53 AM.png';
-import mosquitoAudio from '/662970__ianfsa__mosquito-1-edit.wav'
+import mosquitoAudio from '/662970__ianfsa__mosquito-1-edit.wav';
 import Loading from './components/Loading.jsx';
 import Timer from './components/Timer.jsx';
 
@@ -71,7 +71,7 @@ const GamePage = () => {
     // }, [])
 
     const stopAllMosquitoAudio = () => {
-        mosquitoAudioInstancesRef.current.forEach(audio => {
+        mosquitoAudioInstancesRef.current.forEach((audio) => {
             audio.pause();
             audio.currentTime = 0;
         });
@@ -83,15 +83,13 @@ const GamePage = () => {
 
         if (newMosquitoes === 0) {
             return;
-        }
-        else if (newMosquitoes > 0) {
+        } else if (newMosquitoes > 0) {
             for (let i = 0; i < newMosquitoes; i++) {
                 const newAudio = new Audio(mosquitoAudio);
                 newAudio.play();
                 mosquitoAudioInstancesRef.current.push(newAudio);
             }
-        }
-        else if (newMosquitoes < 0) {
+        } else if (newMosquitoes < 0) {
             for (let i = 0; i < Math.abs(newMosquitoes); i++) {
                 const audioToStop = mosquitoAudioInstancesRef.current.pop();
                 if (audioToStop) {
@@ -101,7 +99,7 @@ const GamePage = () => {
             }
         }
         prevLengthOfMosquitoArrayRef.current = mosquitoes.length;
-    }, [mosquitoes])
+    }, [mosquitoes]);
 
     useEffect(() => {
         //spawn mosquito randomly
@@ -159,7 +157,12 @@ const GamePage = () => {
             const gameCtx = gameRef.current.getContext('2d');
 
             const detect = async () => {
-                if (modelRef.current && canvasRef.current && videoRef.current && videoRef.current.readyState === 4) {
+                if (
+                    modelRef.current &&
+                    canvasRef.current &&
+                    videoRef.current &&
+                    videoRef.current.readyState === 4
+                ) {
                     const predictions = await modelRef.current.estimateHands(videoRef.current);
                     ctx.clearRect(0, 0, canvasRef.current.width, canvasRef.current.height);
                     gameCtx.clearRect(0, 0, gameRef.current.width, gameRef.current.height);
@@ -241,7 +244,7 @@ const GamePage = () => {
                                 size,
                                 size / (HandRef.current.width / HandRef.current.height)
                             );
-                        };
+                        }
 
                         handPositionRef.current = { x: x, y };
                     } else {
@@ -252,7 +255,8 @@ const GamePage = () => {
 
                     if (predictions.length > 0) {
                         currentHandState = predictions[0].handState;
-                        justClosed = prevHandStateRef.current === 'Open' && currentHandState === 'Closed';
+                        justClosed =
+                            prevHandStateRef.current === 'Open' && currentHandState === 'Closed';
                         prevHandStateRef.current = currentHandState;
                     }
                     setMosquitoes((mosquitoArray) => {
@@ -357,46 +361,55 @@ const GamePage = () => {
                         marginBottom: '12px',
                     }}
                 >
-                    <div style={{
-                        fontSize: '1.2rem',
-                        fontWeight: 500,
-                        color: '#6366f1',
-                        background: '#eef2ff',
-                        borderRadius: '12px',
-                        padding: '8px 18px',
-                        boxShadow: '0 2px 8px #6366f11a',
-                    }}>
-                        <Timer initialSeconds={60} onComplete={() => {
-                            stopAllMosquitoAudio();
-                            handleOnComplete(navigate, scoreRef.current.score)
-                        }} />
+                    <div
+                        style={{
+                            fontSize: '1.2rem',
+                            fontWeight: 500,
+                            color: '#6366f1',
+                            background: '#eef2ff',
+                            borderRadius: '12px',
+                            padding: '8px 18px',
+                            boxShadow: '0 2px 8px #6366f11a',
+                        }}
+                    >
+                        <Timer
+                            initialSeconds={60}
+                            onComplete={() => {
+                                stopAllMosquitoAudio();
+                                handleOnComplete(navigate, scoreRef.current.score);
+                            }}
+                        />
                     </div>
-                    <div style={{
-                        fontSize: '1.2rem',
-                        fontWeight: 600,
-                        color: '#fff',
-                        background: 'linear-gradient(90deg, #f43f5e 0%, #6366f1 100%)',
-                        borderRadius: '12px',
-                        padding: '8px 24px',
-                        marginLeft: '16px',
-                        boxShadow: '0 2px 8px #6366f11a',
-                        letterSpacing: '1px',
-                    }}>
+                    <div
+                        style={{
+                            fontSize: '1.2rem',
+                            fontWeight: 600,
+                            color: '#fff',
+                            background: 'linear-gradient(90deg, #f43f5e 0%, #6366f1 100%)',
+                            borderRadius: '12px',
+                            padding: '8px 24px',
+                            marginLeft: '16px',
+                            boxShadow: '0 2px 8px #6366f11a',
+                            letterSpacing: '1px',
+                        }}
+                    >
                         🦟 Score: {scoreRef.current.score}
                     </div>
                 </div>
 
                 {/* Game Canvas */}
-                <div style={{
-                    position: 'relative',
-                    width: '640px',
-                    height: '480px',
-                    borderRadius: '18px',
-                    overflow: 'hidden',
-                    boxShadow: '0 4px 24px #6366f11a',
-                    background: '#f1f5f9',
-                    marginBottom: '8px',
-                }}>
+                <div
+                    style={{
+                        position: 'relative',
+                        width: '640px',
+                        height: '480px',
+                        borderRadius: '18px',
+                        overflow: 'hidden',
+                        boxShadow: '0 4px 24px #6366f11a',
+                        background: '#f1f5f9',
+                        marginBottom: '8px',
+                    }}
+                >
                     <canvas
                         ref={gameRef}
                         width={640}
@@ -410,14 +423,17 @@ const GamePage = () => {
                             display: 'block',
                         }}
                     />
-                    <img ref={HandRef} style={{
-                        position: 'absolute',
-                        left: 0,
-                        top: 0,
-                        pointerEvents: 'none',
-                        zIndex: 3,
-                        display: 'none',
-                    }} />
+                    <img
+                        ref={HandRef}
+                        style={{
+                            position: 'absolute',
+                            left: 0,
+                            top: 0,
+                            pointerEvents: 'none',
+                            zIndex: 3,
+                            display: 'none',
+                        }}
+                    />
                     <img
                         ref={mosquitoRef}
                         src={mosquitoImage}
@@ -427,13 +443,14 @@ const GamePage = () => {
                     />
                     <img src={RoomImage} ref={roomRef} alt="" style={{ display: 'none' }} />
                     {/* <img src={Dot} ref={DotRef} alt="" style={{ display: 'none' }} /> */}
-
                 </div>
 
                 {/* Video Preview */}
-                <button onClick={() => {
-                    navigate('/test')
-                }}>
+                <button
+                    onClick={() => {
+                        navigate('/test');
+                    }}
+                >
                     <div
                         style={{
                             position: 'fixed',
