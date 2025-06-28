@@ -7,6 +7,8 @@ import DeviceCheck from './DeviceCheck.jsx';
 import ScorePage from './ScorePage.jsx';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 
+
+//hello world
 function App() {
     return (
         <>
